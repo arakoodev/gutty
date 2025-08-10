@@ -1,6 +1,6 @@
 {
-  "name": "@arakoodev/gutty",
-  "version": "0.3.6",
+  "name": "@wootz/gutty",
+  "version": "0.4.1",
   "description": "Photo \u2192 Recipe retrieval \u2192 USDA-backed calories. Standalone CLI (no backend).",
   "license": "MIT",
   "type": "module",

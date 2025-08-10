@@ -16,7 +16,7 @@ export async function openRecipesOrThrow() {
   try {
     return await db.openTable(CFG.storage.recipesTable);
   } catch {
-    throw new Error("recipes table not found. Did you run `npx gutty ingest-recipes --dir ./Cal_Data`?");
+    throw new Error("recipes table not found. Did you run `npx gutty ingest-recipes --dir ./Gutty_Data`?");
   }
 }
 
