@@ -1,0 +1,35 @@
+{
+  "name": "@arakoodev/gutty",
+  "version": "0.3.6",
+  "description": "Photo \u2192 Recipe retrieval \u2192 USDA-backed calories. Standalone CLI (no backend).",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "gutty": "bin/cli.js"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsup src --dts --format cjs,esm --clean && tsup bin/cli.ts --format cjs --dts false",
+    "dev": "tsx watch bin/cli.ts",
+    "test": "vitest",
+    "gutty": "node bin/cli.js"
+  },
+  "dependencies": {
+    "@google-cloud/vertexai": "^1.7.0",
+    "@lancedb/lancedb": "^0.7.0",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.5",
+    "node-fetch": "^3.3.2",
+    "zod": "^3.23.8",
+    "tsx": "^4.16.2",
+    "replicate": "^1.0.0",
+    "@fal-ai/client": "^1.1.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.2",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  }
+}

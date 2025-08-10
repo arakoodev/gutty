@@ -1,0 +1,12 @@
+{
+  "title": "Buttermilk Waffle (single piece)",
+  "label": "waffle",
+  "servings": 1,
+  "ingredients": [
+    {
+      "name": "waffle",
+      "qty": 1,
+      "unit": "piece"
+    }
+  ]
+}

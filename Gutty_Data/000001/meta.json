@@ -1,0 +1,27 @@
+{
+  "title": "Grilled Chicken Pasta Bowl with Lettuce",
+  "label": "chicken pasta bowl",
+  "servings": 1,
+  "ingredients": [
+    {
+      "name": "fusilli pasta",
+      "qty": 1,
+      "unit": "cup"
+    },
+    {
+      "name": "grilled chicken breast",
+      "qty": 120,
+      "unit": "g"
+    },
+    {
+      "name": "lettuce",
+      "qty": 1,
+      "unit": "cup"
+    },
+    {
+      "name": "paneer or tofu (grilled)",
+      "qty": 60,
+      "unit": "g"
+    }
+  ]
+}
