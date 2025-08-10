@@ -18,6 +18,9 @@ import healthEmbed from "../src/cli/health-embed";
 import healthBuildIndex from "../src/cli/health-build-index";
 import healthQuery from "../src/cli/health-query";
 import healthAnnotate from "../src/cli/health-annotate";
+import segIndex from "../src/cli/seg-index";
+import segExtract from "../src/cli/seg-extract";
+import segRetrieve from "../src/cli/seg-retrieve";
 
 const program = new Command();
 program.name("gutty").description("Photo → Recipe → Calories (standalone CLI)");
@@ -36,6 +39,9 @@ program.addCommand(healthEmbed);
 program.addCommand(healthBuildIndex);
 program.addCommand(healthQuery);
 program.addCommand(healthAnnotate);
+program.addCommand(segIndex);
+program.addCommand(segExtract);
+program.addCommand(segRetrieve);
 program.addCommand(validate);
 program.addCommand(reset);
 
