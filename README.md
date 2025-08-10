@@ -1,4 +1,4 @@
-# @wootz/gutty (v0.3.2)
+# @arakoodev/gutty (v0.3.2)
 
 Standalone **photo → recipe retrieval → USDA-backed calories** CLI.
 No backend. `.env` holds all keys. Prefers **Vertex AI**; falls back to **Replicate**, then **Fal**.
