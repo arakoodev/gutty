@@ -45,3 +45,20 @@ export async function annSearch(tableName:string, column:string, emb:Float32Arra
   if (filter?.vertical) q = q.where(`vertical = '${filter.vertical}'`);
   return await q.toArray();
 }
+
+export async function upsertSegments(rows:any[]) {
+  const db = await connectDB();
+  let t = await db.openTable(CFG.storage.segmentsTable).catch(()=>null);
+  if (!t) t = await db.createTable(CFG.storage.segmentsTable, rows);
+  else await t.add(rows);
+  return t;
+}
+
+export async function openSegmentsOrThrow() {
+  const db = await connectDB();
+  try {
+    return await db.openTable(CFG.storage.segmentsTable);
+  } catch {
+    throw new Error("segments table not found. Did you run `npx gutty seg-index`?");
+  }
+}

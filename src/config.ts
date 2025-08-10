@@ -1,5 +1,5 @@
 export const CFG = {
-  storage: { lancedbDir: "./lancedb", recipesTable: "recipes" },
+  storage: { lancedbDir: "./lancedb", recipesTable: "recipes", segmentsTable: "segments" },
   providers: {
     vertex: {
       projectId: process.env.VERTEX_PROJECT_ID || "",
