@@ -25,46 +25,35 @@ export default new Command("embed-recipes")
     const all = await getAllRows(t);
 
     const prog = await loadProgress(opts.progress);
-    let processed = 0, skipped = 0, failed = 0;
+    let processed = 0;
+    let skipped = 0;
 
     for (const r of all) {
-      const paths = (r.image_paths || []).slice(0,5);
+      const paths = (r.image_paths || []).slice(0, 5);
       const embs: Float32Array[] = [];
       for (const pth of paths) {
         try {
-          const e = await withFallback(async p => await p.imageEmbed({ path: pth }));
+          const e = await withFallback(async (p) => await p.imageEmbed({ path: pth }));
           embs.push(e);
-        } catch {}
+        } catch {
+          // ignore per-image failures; we'll skip rows with no embeddings
+        }
       }
-      if (!embs.length) { skipped++; continue; }
-      const d = embs[0].length; const mean = new Float32Array(d);
-      for (const e of embs) for (let i=0;i<d;i++) mean[i]+=e[i];
-      for (let i=0;i<d;i++) mean[i]/=embs.length;
+      if (!embs.length) {
+        skipped++;
+        continue;
+      }
+      const d = embs[0].length;
+      const mean = new Float32Array(d);
+      for (const e of embs) for (let i = 0; i < d; i++) mean[i] += e[i];
+      for (let i = 0; i < d; i++) mean[i] /= embs.length;
       r.emb_clip_b32 = Array.from(mean);
       prog.doneIds[r.id] = true;
       processed++;
       if (processed % 10 === 0) await saveProgress(opts.progress, prog);
     }
-      try {
-        const paths = (r.image_paths || []).slice(0,5);
-        const embs: Float32Array[] = [];
-        for (const pth of paths) {
-          try { embs.push(await provider.imageEmbed({ path: pth })); } catch {}
-        }
-        if (!embs.length) { skipped++; continue; }
-        const d = embs[0].length; const mean = new Float32Array(d);
-        for (const e of embs) for (let i=0;i<d;i++) mean[i]+=e[i];
-        for (let i=0;i<d;i++) mean[i]/=embs.length;
-        r.emb_clip_b32 = Array.from(mean);
-        prog.doneIds[r.id] = true;
-        processed++;
-        if (processed % 10 === 0) await saveProgress(opts.progress, prog);
-      } catch {
-        failed++;
-      }
-    }
     // overwrite table once at the end (atomic-ish)
     await t.add(all, { mode: "overwrite" });
     await saveProgress(opts.progress, prog);
-    console.log(`Embedding complete. processed=${processed} skipped=${skipped} failed=${failed}`);
+    console.log(`Embedding complete. processed=${processed} skipped=${skipped}`);
   });
