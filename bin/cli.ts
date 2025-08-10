@@ -39,4 +39,4 @@ program.addCommand(healthAnnotate);
 program.addCommand(validate);
 program.addCommand(reset);
 
-program.parseAsync();
+await program.parseAsync();
