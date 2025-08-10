@@ -13,6 +13,11 @@ import calories from "../src/cli/calories";
 import validate from "../src/cli/validate";
 import reset from "../src/cli/reset";
 import recipeAnalyze from "../src/cli/recipe-analyze";
+import healthIngest from "../src/cli/health-ingest";
+import healthEmbed from "../src/cli/health-embed";
+import healthBuildIndex from "../src/cli/health-build-index";
+import healthQuery from "../src/cli/health-query";
+import healthAnnotate from "../src/cli/health-annotate";
 
 const program = new Command();
 program.name("gutty").description("Photo → Recipe → Calories (standalone CLI)");
@@ -26,6 +31,11 @@ program.addCommand(recipeRerank);
 program.addCommand(recipeRag);
 program.addCommand(calories);
 program.addCommand(recipeAnalyze);
+program.addCommand(healthIngest);
+program.addCommand(healthEmbed);
+program.addCommand(healthBuildIndex);
+program.addCommand(healthQuery);
+program.addCommand(healthAnnotate);
 program.addCommand(validate);
 program.addCommand(reset);
 
