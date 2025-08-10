@@ -24,6 +24,18 @@ npx gutty build-index
 npx gutty recipe-analyze --image Gutty_Data/000001/img1.jpg --out ./analysis.json
 ```
 
+### Ingredient segmentation (zero-train)
+```bash
+# build region index from FoodSeg103 / FoodInsSeg crops
+npx gutty seg-index --foodseg103 /path/to/FoodSeg103/crops --foodinsseg /path/to/FoodInsSeg/crops
+
+# extract ingredient masks from a photo
+npx gutty seg-extract --image sample.jpg --labels "tomato,lettuce,bread" --out ./tmp/masks
+
+# retrieve nearest labeled ingredients for each mask
+npx gutty seg-retrieve --masks ./tmp/masks --topk 5 --out ./tmp/segments.json
+```
+
 ## Providers & fallbacks
 Order: **Vertex → Replicate → Fal**
 
