@@ -80,8 +80,13 @@ export function toGramsUsingDensity(qty: number, unit: string, dens: DensityResu
       return qty * ML[u] * dens.byVolume[k];
     }
   }
-  const pieceKey = Object.keys(dens.byPiece).find(k => unit.toLowerCase().includes(k.split(" ")[1] || "piece"));
-  if (pieceKey) return qty * dens.byPiece[pieceKey];
+  const unitLc = unit.toLowerCase();
+  for (const [desc, gramsPer] of Object.entries(dens.byPiece)) {
+    const words = desc.toLowerCase().split(/[^a-z]+/).filter(Boolean);
+    if (words.some(w => unitLc.includes(w))) {
+      return qty * gramsPer;
+    }
+  }
   if (u.includes("g")) return qty;
   if (u.includes("kg")) return qty * 1000;
   if (fallbackPer100g) return qty * fallbackPer100g;
