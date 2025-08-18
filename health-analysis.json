@@ -1,0 +1,579 @@
+{
+  "metadata": {
+    "analysis_date": "2025-08-18T19:20:53.022Z",
+    "input_image": "https://cinnamonsnail.com/wp-content/uploads/2023/06/Lauki-ki-sabji-feature.jpg",
+    "download_path": "/tmp/gutty-image-1755544834271.jpg",
+    "verticals_analyzed": [
+      "pcos",
+      "endometriosis",
+      "ibs"
+    ],
+    "processing_pipeline": "Image → Recipe Matching → Nutrition Mapping → Health Analysis"
+  },
+  "step1_recipe_matching": {
+    "description": "Image analyzed using CLIP embeddings to find similar recipes from database",
+    "candidates_found": 50,
+    "top_candidates": [
+      {
+        "recipe_id": "140278",
+        "title": "Stew In A Pumpkin(Serves 8 To 10)",
+        "similarity_score": "0.091",
+        "ingredients_preview": "3 Tbsp. vegetable oil, 1 large onion, roughly chopped, 2 cloves garlic, minced..."
+      },
+      {
+        "recipe_id": "135152",
+        "title": "Squash Crouquettes",
+        "similarity_score": "0.072",
+        "ingredients_preview": "4 or 5 yellow squash, cut up, 1 small onion, cut up, salt to taste..."
+      },
+      {
+        "recipe_id": "162585",
+        "title": "Eva'S Mexican Squash With Ground Meat",
+        "similarity_score": "0.064",
+        "ingredients_preview": "1 Tbsp. vegetable oil, 1/2 lb. ground round steak, 1 small onion, diced..."
+      },
+      {
+        "recipe_id": "16713",
+        "title": "Microwave Zucchini Casserole",
+        "similarity_score": "0.062",
+        "ingredients_preview": "4 c. zucchini, peeled and cut into chunks, 1/2 medium onion, thinly sliced, 4 eggs, beaten..."
+      },
+      {
+        "recipe_id": "148954",
+        "title": "Zucchini And Tomato With Herbs",
+        "similarity_score": "0.061",
+        "ingredients_preview": "1/2 c. finely chopped onion, 2 Tbsp. unsalted butter or light olive oil, 2 small zucchini, scrubbed and sliced thin (2 c.)..."
+      }
+    ],
+    "llm_consolidation": {
+      "chosen_recipe": "140278",
+      "confidence_indicators": [
+        "Selected from top 10 candidates",
+        "Recipe servings: 4",
+        "Extracted 16 ingredients"
+      ]
+    }
+  },
+  "step2_nutrition_mapping": {
+    "description": "Recipe ingredients mapped to COFID nutrition database and glycemic index data",
+    "ingredient_mapping": [
+      {
+        "ingredient": "Oil, coconut",
+        "cofid_match": "Oil, coconut",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Onion sauce, made with semi-skimmed milk, homemade",
+        "cofid_match": "Onion sauce, made with semi-skimmed milk, homemade",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Cloves, dried",
+        "cofid_match": "Cloves, dried",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Beef, braising steak, braised, lean and fat",
+        "cofid_match": "Beef, braising steak, braised, lean and fat",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Tomatoes, canned, whole contents",
+        "cofid_match": "Tomatoes, canned, whole contents",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Pepper, black",
+        "cofid_match": "Pepper, black",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Potato, leek and celery bake",
+        "cofid_match": "Potato, leek and celery bake",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Potato, leek and celery bake",
+        "cofid_match": "Potato, leek and celery bake",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Salt",
+        "cofid_match": "Salt",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Pepper, black",
+        "cofid_match": "Pepper, black",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Honey",
+        "cofid_match": "Honey",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "high-fodmap",
+          "ibs-caution"
+        ]
+      },
+      {
+        "ingredient": "Beef, braising steak, braised, lean and fat",
+        "cofid_match": "Beef, braising steak, braised, lean and fat",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Pumpkin, flesh only, boiled in unsalted water",
+        "cofid_match": "Pumpkin, flesh only, boiled in unsalted water",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Butter, salted",
+        "cofid_match": "Butter, salted",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Marjoram, dried",
+        "cofid_match": "Marjoram, dried",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      }
+    ],
+    "totals_calculated": {
+      "calories": 0,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0,
+      "sugars": 0,
+      "sodium": 0,
+      "gi_value": 54,
+      "is_low_gi": true,
+      "is_high_fodmap": true,
+      "health_flags": [
+        "low-gi",
+        "pcos-friendly",
+        "high-fodmap",
+        "ibs-caution"
+      ]
+    },
+    "database_coverage": {
+      "ingredients_found": 15,
+      "total_ingredients": 16,
+      "coverage_percentage": 94
+    },
+    "glycemic_assessment": {
+      "average_gi": 54,
+      "gi_category": "Low (≤55)"
+    }
+  },
+  "step3_health_analysis": {
+    "description": "Ingredients analyzed against health condition databases and research",
+    "analysis_by_vertical": {
+      "pcos": {
+        "triggers_found": [
+          {
+            "vertical": "pcos",
+            "type": "glycemic_index",
+            "message": "Low glycemic index (54) supports insulin sensitivity",
+            "severity": "positive",
+            "recommendation": "Good choice for PCOS management",
+            "ref": "PCOS dietary guidelines"
+          }
+        ],
+        "knowledge_base_search": null
+      },
+      "endometriosis": {
+        "triggers_found": [],
+        "knowledge_base_search": null
+      },
+      "ibs": {
+        "triggers_found": [
+          {
+            "vertical": "ibs",
+            "type": "fodmap_content",
+            "message": "Contains high-FODMAP ingredients that may trigger IBS symptoms",
+            "severity": "caution",
+            "recommendation": "Monitor symptoms or substitute with low-FODMAP alternatives",
+            "ref": "Monash FODMAP research"
+          }
+        ],
+        "knowledge_base_search": null
+      }
+    }
+  },
+  "final_results": {
+    "recipe_identification": {
+      "chosenRecipeId": "140278",
+      "servings": 4,
+      "ingredients": [
+        {
+          "name": "3 Tbsp. vegetable oil",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "1 large onion, roughly chopped",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "2 cloves garlic, minced",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "2 lb. boneless beef chuck, trimmed and cut into 1 1/2-inch cubes",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "2 large tomatoes, peeled, seeded and chopped",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "1 large green bell pepper, seeded and chopped",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "3 medium white potatoes, peeled and diced",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "3 medium sweet potatoes, peeled and diced",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "1/4 tsp. salt",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "1/2 tsp. freshly ground black pepper",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "1 tsp. honey",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "2 c. beef broth",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "1 medium pumpkin (about 12 lb.), measured to fit your oven",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "1 Tbsp. unsalted butter, melted",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "1 1/2 c. cooked corn, at room temperature",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "1 tsp. chopped fresh marjoram, or pinch of dried",
+          "qty": 1,
+          "unit": "serving"
+        }
+      ]
+    },
+    "nutrition_totals": {
+      "calories": 0,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0,
+      "sugars": 0,
+      "sodium": 0,
+      "gi_value": 54,
+      "is_low_gi": true,
+      "is_high_fodmap": true,
+      "health_flags": [
+        "low-gi",
+        "pcos-friendly",
+        "high-fodmap",
+        "ibs-caution"
+      ]
+    },
+    "health_considerations": {
+      "notes": [
+        {
+          "vertical": "pcos",
+          "type": "glycemic_index",
+          "message": "Low glycemic index (54) supports insulin sensitivity",
+          "severity": "positive",
+          "recommendation": "Good choice for PCOS management",
+          "ref": "PCOS dietary guidelines"
+        },
+        {
+          "vertical": "ibs",
+          "type": "fodmap_content",
+          "message": "Contains high-FODMAP ingredients that may trigger IBS symptoms",
+          "severity": "caution",
+          "recommendation": "Monitor symptoms or substitute with low-FODMAP alternatives",
+          "ref": "Monash FODMAP research"
+        }
+      ],
+      "evidence": [],
+      "nutrition_flags": [
+        "low-gi",
+        "pcos-friendly",
+        "high-fodmap",
+        "ibs-caution"
+      ]
+    },
+    "summary": {
+      "recipe_id": "140278",
+      "servings": 4,
+      "ingredients_count": 16,
+      "health_flags": 2,
+      "processing_success": true
+    }
+  }
+}

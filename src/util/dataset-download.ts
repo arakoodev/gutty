@@ -30,6 +30,17 @@ export const RESEARCH_DATASETS: DatasetConfig[] = [
     name: "UECFood256",
     url: "https://huggingface.co/datasets/tiennv/uecfood256",
     destination: CFG.datasets.uecfood256.dir
+  },
+  {
+    name: "UECFood100",
+    url: "http://foodcam.mobi/dataset100.zip",
+    destination: CFG.datasets.uecfood100.dir,
+    extractCommand: "unzip"
+  },
+  {
+    name: "RecipeNLG",
+    url: "https://huggingface.co/datasets/Zappandy/recipe_nlg",
+    destination: CFG.datasets.recipe1m.dir
   }
 ];
 
@@ -72,7 +83,7 @@ async function downloadHuggingFace(repoUrl: string, output: string): Promise<voi
   
   try {
     // Use snapshotDownload to download the dataset
-    await snapshotDownload({
+    const cacheDir = await snapshotDownload({
       repo: {
         name: repoPath,
         type: "dataset",
@@ -80,6 +91,20 @@ async function downloadHuggingFace(repoUrl: string, output: string): Promise<voi
       localDir: output,
       accessToken: hfKey
     });
+    
+    // If files weren't copied to localDir, copy them from cache
+    try {
+      const localFiles = await fs.readdir(output);
+      if (localFiles.length === 0) {
+        console.log(`   Copying files from cache: ${cacheDir}`);
+        const { execFile } = await import('child_process');
+        const { promisify } = await import('util');
+        const execFileAsync = promisify(execFile);
+        await execFileAsync('cp', ['-r', `${cacheDir}/*`, output]);
+      }
+    } catch (copyError) {
+      // Files might already be copied, ignore copy errors
+    }
   } catch (error) {
     throw new Error(`HuggingFace download failed: ${error}`);
   }
@@ -180,7 +205,7 @@ export function getDatasetPaths(): { foodseg103: string; foodinsseg: string } {
 /**
  * Check if datasets exist at expected locations
  */
-export async function checkDatasetExists(dataset: 'foodseg103' | 'foodinsseg' | 'uecfood256'): Promise<boolean> {
+export async function checkDatasetExists(dataset: 'foodseg103' | 'foodinsseg' | 'uecfood256' | 'uecfood100'): Promise<boolean> {
   try {
     if (dataset === 'foodseg103') {
       await fs.access(CFG.datasets.foodseg103.dataDir);
@@ -189,9 +214,13 @@ export async function checkDatasetExists(dataset: 'foodseg103' | 'foodinsseg' | 
       await fs.access(CFG.datasets.foodinsseg.imageDir);
       const files = await fs.readdir(CFG.datasets.foodinsseg.imageDir);
       return files.filter(f => f.endsWith('.jpg')).length > 100;
-    } else {
+    } else if (dataset === 'uecfood256') {
       await fs.access(CFG.datasets.uecfood256.imageDir);
       const files = await fs.readdir(CFG.datasets.uecfood256.imageDir);
+      return files.filter(f => f.match(/\.(jpg|jpeg|png)$/i)).length > 100;
+    } else {
+      await fs.access(CFG.datasets.uecfood100.imageDir);
+      const files = await fs.readdir(CFG.datasets.uecfood100.imageDir);
       return files.filter(f => f.match(/\.(jpg|jpeg|png)$/i)).length > 100;
     }
   } catch {
@@ -202,10 +231,11 @@ export async function checkDatasetExists(dataset: 'foodseg103' | 'foodinsseg' | 
 /**
  * Get actual image directories for indexing
  */
-export function getImageDirectories(): { foodseg103?: string; foodinsseg?: string; uecfood256?: string } {
+export function getImageDirectories(): { foodseg103?: string; foodinsseg?: string; uecfood256?: string; uecfood100?: string } {
   return {
     foodseg103: CFG.datasets.foodseg103.dataDir, // parquet files
     foodinsseg: CFG.datasets.foodinsseg.imageDir, // jpg files
-    uecfood256: CFG.datasets.uecfood256.imageDir // jpg/png files
+    uecfood256: CFG.datasets.uecfood256.imageDir, // jpg/png files
+    uecfood100: CFG.datasets.uecfood100.imageDir // jpg/png files
   };
 }

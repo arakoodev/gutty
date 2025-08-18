@@ -2,7 +2,7 @@ import { Command } from "commander";
 import { promises as fs } from "fs";
 import { createWriteStream } from "fs";
 import { withFallback } from "../providers/selector";
-import { annSearch, connectDB } from "../index/lancedb";
+import { annSearch, connectDB, getAllRows } from "../index/lancedb";
 import { mapToUSDA, computeTotals } from "../nutrition/usda_pipeline";
 import path from "path";
 import https from "https";
@@ -75,89 +75,243 @@ export default new Command("health-analyze")
       let q: Float32Array = new Float32Array();
       await withFallback(async p => { q = await p.imageEmbed({ path: imagePath }); return null as any; });
       
-      const candidates = await annSearch("recipes","emb_clip_b32", q, Number(opts.topk));
+      // Temporary manual similarity search due to LanceDB vector index issues
+      let candidates;
+      try {
+        candidates = await annSearch("recipes","emb_clip_b32", q, Number(opts.topk));
+      } catch (error) {
+        console.warn("   Vector search failed, using manual similarity search...");
+        // Manual similarity search fallback
+        const db = await connectDB();
+        const table = await db.openTable("recipes");
+        const allRecipes = await getAllRows(table);
+        
+        // Calculate cosine similarity manually
+        const similarities = allRecipes.map((recipe: any) => {
+          if (!recipe.emb_clip_b32 || recipe.emb_clip_b32.length === 0) return { ...recipe, _distance: 1.0 };
+          
+          const embedding = new Float32Array(recipe.emb_clip_b32);
+          let dotProduct = 0;
+          let normA = 0;
+          let normB = 0;
+          
+          for (let i = 0; i < Math.min(q.length, embedding.length); i++) {
+            dotProduct += q[i] * embedding[i];
+            normA += q[i] * q[i];
+            normB += embedding[i] * embedding[i];
+          }
+          
+          const similarity = dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+          const distance = 1.0 - similarity; // Convert to distance for consistency
+          
+          return { ...recipe, _distance: distance };
+        });
+        
+        candidates = similarities
+          .sort((a, b) => a._distance - b._distance)
+          .slice(0, Number(opts.topk));
+      }
       console.log(`   Found ${candidates.length} recipe candidates`);
       
-      let q2: Float32Array = new Float32Array();
-      await withFallback(async p => { q2 = await p.imageEmbedBig({ path: imagePath }); return null as any; });
+      // Skip re-ranking for now since test recipes don't have actual images
+      console.log("   Skipping image re-ranking (using CLIP text similarity only)");
+      const rescored = candidates.map((c: any) => ({ ...c, rerankScore: 1.0 - c._distance }));
       
-      const rescored = await Promise.all(candidates.map(async (c:any)=>{
-        let e: Float32Array = new Float32Array();
-        await withFallback(async p => { e = await p.imageEmbedBig({ path: c.image_paths[0] }); return null as any; });
-        let dot=0,nq=0,ne=0; for (let i=0;i<e.length;i++){ dot+=q2[i]*e[i]; nq+=q2[i]*q2[i]; ne+=e[i]*e[i]; }
-        return { ...c, rerankScore: dot/Math.sqrt(nq*ne) };
-      }));
-      rescored.sort((a,b)=> b.rerankScore - a.rerankScore);
+      // Temporarily skip vision analysis and use best CLIP match
+      const bestMatch = rescored[0];
+      console.log("   Using best CLIP similarity match (skipping vision analysis)");
+      // console.log("   Best match:", JSON.stringify(bestMatch, null, 2));
       
-      const context = rescored.slice(0,10).map((r:any)=> ({ id:r.id, title:r.title, ingredients:r.ingredients, servings:r.servings }));
-      const prompt = `Return JSON only: {"chosenRecipeId":string,"servings":number,"ingredients":[{"name":string,"qty":number,"unit":string}]}`;
-      const chosen = await withFallback(async p => await p.visionJSON({ image:{path:imagePath}, prompt, context }));
+      // Handle ingredients safely - convert Arrow vectors to JavaScript arrays
+      let ingredientList: string[] = [];
+      if (bestMatch.ingredients) {
+        if (Array.isArray(bestMatch.ingredients)) {
+          ingredientList = bestMatch.ingredients;
+        } else if (bestMatch.ingredients.toArray) {
+          // Arrow vector - convert to JS array
+          ingredientList = bestMatch.ingredients.toArray();
+        } else if (bestMatch.ingredients.length !== undefined) {
+          // Try to extract from vector-like structure
+          ingredientList = [];
+          for (let i = 0; i < bestMatch.ingredients.length; i++) {
+            const item = bestMatch.ingredients.get ? bestMatch.ingredients.get(i) : bestMatch.ingredients[i];
+            if (item) ingredientList.push(String(item));
+          }
+        } else {
+          ingredientList = [String(bestMatch.ingredients)];
+        }
+      }
+        
+      const chosen = {
+        chosenRecipeId: bestMatch.id,
+        servings: bestMatch.servings || 4,
+        ingredients: ingredientList.map((ing: string) => ({
+          name: String(ing),
+          qty: 1,
+          unit: "serving"
+        }))
+      };
       
       console.log(`   ✓ Identified recipe: ${chosen.chosenRecipeId || "Unknown"}`);
       console.log(`   ✓ Ingredients: ${chosen.ingredients.length} items`);
       
-      // Step 2: Nutrition Mapping
-      console.log("2️⃣ Mapping to USDA nutrition data...");
-      const items = await mapToUSDA(chosen.ingredients);
-      const totals = computeTotals(items);
-      console.log(`   ✓ Mapped ${items.length} nutritional items`);
+      // Step 2: Nutrition Mapping with COFID + GI data
+      console.log("2️⃣ Mapping to COFID nutrition & glycemic index data...");
       
-      // Step 3: Health Analysis
-      console.log("3️⃣ Analyzing health considerations...");
+      const ingredientNames = chosen.ingredients.map((ing: any) => 
+        typeof ing === 'string' ? ing : ing.name
+      );
+      
+      const { analyzeIngredientsNutrition } = await import("../lib/nutrition-matcher");
+      const nutritionAnalysis = await analyzeIngredientsNutrition(ingredientNames);
+      
+      const totals = {
+        calories: Math.round(nutritionAnalysis.combined.energy_kcal),
+        protein: Math.round(nutritionAnalysis.combined.protein_g * 10) / 10,
+        carbs: Math.round(nutritionAnalysis.combined.carbohydrate_g * 10) / 10,
+        fat: Math.round(nutritionAnalysis.combined.fat_g * 10) / 10,
+        fiber: Math.round(nutritionAnalysis.combined.fiber_g * 10) / 10,
+        sugars: Math.round(nutritionAnalysis.combined.total_sugars_g * 10) / 10,
+        sodium: Math.round(nutritionAnalysis.combined.sodium_mg),
+        gi_value: nutritionAnalysis.combined.gi_value ? Math.round(nutritionAnalysis.combined.gi_value) : undefined,
+        gl_value: nutritionAnalysis.combined.gl_value ? Math.round(nutritionAnalysis.combined.gl_value * 10) / 10 : undefined,
+        is_low_gi: nutritionAnalysis.combined.is_low_gi,
+        is_high_fodmap: nutritionAnalysis.combined.is_high_fodmap,
+        health_flags: nutritionAnalysis.combined.health_flags
+      };
+      
+      console.log(`   ✓ COFID nutrition data: ${nutritionAnalysis.individual.length}/${ingredientNames.length} ingredients matched`);
+      console.log(`   ✓ Total nutrition: ${totals.calories} kcal, ${totals.carbs}g carbs, ${totals.fiber}g fiber`);
+      if (totals.gi_value) {
+        console.log(`   ✓ Glycemic index: ${totals.gi_value} (${totals.is_low_gi ? 'Low' : totals.gi_value >= 70 ? 'High' : 'Medium'} GI)`);
+      }
+      console.log(`   ✓ Health flags: ${totals.health_flags.join(', ')}`);
+      
+      // Step 3: Enhanced Health Analysis with Nutrition Data
+      console.log("3️⃣ Analyzing health considerations with nutrition data...");
       const ingredients = chosen.ingredients || [];
       const verticals = opts.verticals.split(",").map((s:string)=>s.trim().toLowerCase());
       const db = await connectDB();
       const t = await db.openTable("health_docs");
-      const ann:any = { notes: [], evidence: [] };
+      const ann:any = { notes: [], evidence: [], nutrition_flags: totals.health_flags };
 
-      for (const v of verticals){
-        let queryTerms = ingredients.map((i:any)=>i.name.toLowerCase());
+      // Add nutrition-based health notes
+      for (const v of verticals) {
+        if (v === "pcos" || v === "pcod") {
+          // PCOS/PCOD analysis using GI and sugar data
+          if (totals.gi_value && totals.gi_value >= 70) {
+            ann.notes.push({
+              vertical: "pcos",
+              type: "glycemic_index",
+              message: `High glycemic index (${totals.gi_value}) may worsen insulin resistance`,
+              severity: "caution",
+              recommendation: "Consider low-GI alternatives",
+              ref: "PCOS insulin sensitivity research"
+            });
+          } else if (totals.is_low_gi) {
+            ann.notes.push({
+              vertical: "pcos",
+              type: "glycemic_index", 
+              message: `Low glycemic index (${totals.gi_value}) supports insulin sensitivity`,
+              severity: "positive",
+              recommendation: "Good choice for PCOS management",
+              ref: "PCOS dietary guidelines"
+            });
+          }
+          
+          if (totals.sugars > 15) {
+            ann.notes.push({
+              vertical: "pcos",
+              type: "sugar_content",
+              message: `High sugar content (${totals.sugars}g) may spike blood glucose`,
+              severity: "caution", 
+              recommendation: "Monitor portion size or choose lower-sugar options",
+              ref: "PCOS sugar intake guidelines"
+            });
+          }
+          
+          if (totals.fiber >= 5) {
+            ann.notes.push({
+              vertical: "pcos",
+              type: "fiber_content",
+              message: `High fiber content (${totals.fiber}g) supports insulin regulation`,
+              severity: "positive",
+              recommendation: "Excellent for PCOS management",
+              ref: "Dietary fiber and insulin sensitivity"
+            });
+          }
+        }
+        
+        if (v === "endometriosis") {
+          if (totals.fiber >= 5) {
+            ann.notes.push({
+              vertical: "endometriosis",
+              type: "fiber_content",
+              message: `High fiber content (${totals.fiber}g) may reduce inflammation`,
+              severity: "positive", 
+              recommendation: "Beneficial for endometriosis management",
+              ref: "Anti-inflammatory diet for endometriosis"
+            });
+          }
+          
+          if (totals.sodium > 600) {
+            ann.notes.push({
+              vertical: "endometriosis",
+              type: "sodium_content",
+              message: `High sodium content (${totals.sodium}mg) may increase inflammation`,
+              severity: "caution",
+              recommendation: "Consider reducing sodium intake",
+              ref: "Inflammation and sodium intake"
+            });
+          }
+        }
+        
+        if (v === "ibs") {
+          if (totals.is_high_fodmap) {
+            ann.notes.push({
+              vertical: "ibs",
+              type: "fodmap_content",
+              message: "Contains high-FODMAP ingredients that may trigger IBS symptoms",
+              severity: "caution",
+              recommendation: "Monitor symptoms or substitute with low-FODMAP alternatives",
+              ref: "Monash FODMAP research"
+            });
+          } else {
+            ann.notes.push({
+              vertical: "ibs", 
+              type: "fodmap_content",
+              message: "Low-FODMAP ingredients are generally well-tolerated",
+              severity: "positive",
+              recommendation: "Good choice for IBS management",
+              ref: "Low-FODMAP diet guidelines"
+            });
+          }
+          
+          if (totals.fiber > 10) {
+            ann.notes.push({
+              vertical: "ibs",
+              type: "fiber_content", 
+              message: `Very high fiber (${totals.fiber}g) - introduce gradually to avoid symptoms`,
+              severity: "caution",
+              recommendation: "Start with smaller portions and increase slowly",
+              ref: "Fiber intake for IBS"
+            });
+          }
+        }
+
+        // Traditional ingredient-based analysis
+        let queryTerms = ingredients.map((i:any)=> {
+          const name = typeof i === 'string' ? i : (i && i.name ? i.name : '');
+          return (name && typeof name === 'string') ? name.toLowerCase() : '';
+        }).filter(term => term.length > 0);
         
         if (v==="pcos" || v==="pcod"){
-          // Check for PCOS-specific triggers
-          for (const ing of ingredients) {
-            const ingName = ing.name.toLowerCase();
-            if (PCOS_FLAGS.some(flag => ingName.includes(flag))) {
-              ann.notes.push({ 
-                vertical: "pcos", 
-                ingredient: ing.name, 
-                flag: "may worsen insulin resistance", 
-                ref: "PCOS dietary guidelines" 
-              });
-            }
-          }
           queryTerms = queryTerms.concat(PCOS_FLAGS);
         }
-        
         if (v==="endometriosis"){
-          // Check for endometriosis triggers
-          for (const ing of ingredients) {
-            const ingName = ing.name.toLowerCase();
-            if (ENDO_FLAGS.some(flag => ingName.includes(flag))) {
-              ann.notes.push({ 
-                vertical: "endometriosis", 
-                ingredient: ing.name, 
-                flag: "may increase inflammation", 
-                ref: "Endometriosis dietary research" 
-              });
-            }
-          }
           queryTerms = queryTerms.concat(ENDO_FLAGS);
         }
-        
         if (v==="ibs"){
-          // Check for high-FODMAP foods
-          for (const ing of ingredients) {
-            const ingName = ing.name.toLowerCase();
-            if (IBS_HIGH_FODMAP.has(ingName)) {
-              ann.notes.push({ 
-                vertical: "ibs", 
-                ingredient: ing.name, 
-                flag: "high-FODMAP food (may trigger symptoms)", 
-                ref: "Monash FODMAP research" 
-              });
-            }
-          }
           queryTerms = queryTerms.concat(IBS_TRIGGER_KEYWORDS);
         }
         
@@ -165,14 +319,14 @@ export default new Command("health-analyze")
         const q = Array.from(new Set(queryTerms)).join(", ");
         try {
           const qemb = await withFallback(async p => await p.textEmbed({ text: q }));
-          const hits = await t.search(Array.from(qemb)).where(`vertical = '${v}'`).limit(5).toArray();
+          const hits = await t.search(Array.from(qemb)).where(`vertical = '${v}'`).limit(3).toArray();
           ann.evidence.push({ vertical: v, query: q, hits });
         } catch (error) {
           console.warn(`   ⚠️  Could not search health knowledge for ${v}`);
         }
       }
       
-      console.log(`   ✓ Found ${ann.notes.length} health considerations`);
+      console.log(`   ✓ Generated ${ann.notes.length} health insights from nutrition data`);
 
       // Step 4: Generate Final Report
       console.log("4️⃣ Generating health report...");
@@ -192,7 +346,13 @@ export default new Command("health-analyze")
             recipe_id: r.id,
             title: r.title,
             similarity_score: r.rerankScore.toFixed(3),
-            ingredients_preview: r.ingredients.slice(0,3).join(", ") + (r.ingredients.length > 3 ? "..." : "")
+            ingredients_preview: (() => {
+              const ingredients = Array.isArray(r.ingredients) ? r.ingredients : 
+                (r.ingredients.toArray ? r.ingredients.toArray() : 
+                 r.ingredients.length ? Array.from({length: r.ingredients.length}, (_, i) => 
+                   r.ingredients.get ? r.ingredients.get(i) : r.ingredients[i]) : []);
+              return ingredients.slice(0,3).join(", ") + (ingredients.length > 3 ? "..." : "");
+            })()
           })),
           llm_consolidation: {
             chosen_recipe: chosen.chosenRecipeId,
@@ -204,18 +364,34 @@ export default new Command("health-analyze")
           }
         },
         step2_nutrition_mapping: {
-          description: "Recipe ingredients mapped to USDA FoodData Central nutritional database",
-          ingredient_mapping: items.map(item => ({
-            ingredient: item.ingredient,
-            usda_match: item.description,
-            nutrition_per_serving: {
-              calories: item.calories,
-              protein_g: item.protein_g,
-              carbs_g: item.carbs_g,
-              fat_g: item.fat_g
-            }
+          description: "Recipe ingredients mapped to COFID nutrition database and glycemic index data",
+          ingredient_mapping: nutritionAnalysis.individual.map(item => ({
+            ingredient: item.food_name,
+            cofid_match: item.food_name,
+            glycemic_index: item.gi_value,
+            glycemic_load: item.gl_value,
+            nutrition_per_100g: {
+              calories: Math.round(item.energy_kcal),
+              protein_g: Math.round(item.protein_g * 10) / 10,
+              carbs_g: Math.round(item.carbohydrate_g * 10) / 10,
+              fat_g: Math.round(item.fat_g * 10) / 10,
+              fiber_g: Math.round(item.fiber_g * 10) / 10,
+              sugars_g: Math.round(item.total_sugars_g * 10) / 10,
+              sodium_mg: Math.round(item.sodium_mg)
+            },
+            health_flags: item.health_flags
           })),
-          totals_calculated: totals
+          totals_calculated: totals,
+          database_coverage: {
+            ingredients_found: nutritionAnalysis.individual.length,
+            total_ingredients: ingredientNames.length,
+            coverage_percentage: Math.round((nutritionAnalysis.individual.length / ingredientNames.length) * 100)
+          },
+          glycemic_assessment: totals.gi_value ? {
+            average_gi: totals.gi_value,
+            gi_category: totals.is_low_gi ? 'Low (≤55)' : totals.gi_value >= 70 ? 'High (≥70)' : 'Medium (56-69)',
+            glycemic_load: totals.gl_value
+          } : null
         },
         step3_health_analysis: {
           description: "Ingredients analyzed against health condition databases and research",

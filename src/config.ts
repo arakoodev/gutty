@@ -1,5 +1,12 @@
 export const CFG = {
-  storage: { lancedbDir: "./lancedb", recipesTable: "recipes", segmentsTable: "segments" },
+  storage: { 
+    lancedbDir: "./lancedb", 
+    recipesTable: "recipes", 
+    segmentsTable: "segments",
+    nutritionTable: "nutrition_facts",
+    glycemicTable: "glycemic_index",
+    fodmapTable: "fodmap_data"
+  },
   datasets: {
     baseDir: "./datasets",
     foodinsseg: {
@@ -13,6 +20,15 @@ export const CFG = {
     uecfood256: {
       dir: "./datasets/uecfood256",
       imageDir: "./datasets/uecfood256/images"
+    },
+    uecfood100: {
+      dir: "./datasets/uecfood100",
+      imageDir: "./datasets/uecfood100/images"
+    },
+    recipe1m: {
+      dir: "./datasets/recipe1m",
+      dataDir: "./datasets/recipe1m/data",
+      imageDir: "./datasets/recipe1m/images"
     }
   },
   providers: {

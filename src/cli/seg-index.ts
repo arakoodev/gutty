@@ -59,6 +59,7 @@ export default new Command("seg-index")
   .option("--foodseg103 <dir>", "Path to FoodSeg103 crops (override default)")
   .option("--foodinsseg <dir>", "Path to FoodInsSeg crops (override default)")  
   .option("--uecfood256 <dir>", "Path to UECFood256 crops (override default)")  
+  .option("--uecfood100 <dir>", "Path to UECFood100 crops (override default)")  
   .option("--progress <path>", "Progress file", "./tmp/seg-index.progress.json")
   .option("--no-download", "Skip automatic dataset download")
   .option("--optimized", "Use optimized indexing for CLIP filtering", true)
@@ -79,6 +80,7 @@ export default new Command("seg-index")
     const foodinssegDir = opts.foodinsseg || imageDirs.foodinsseg;
     const foodseg103Dir = opts.foodseg103 || imageDirs.foodseg103;
     const uecfood256Dir = opts.uecfood256 || imageDirs.uecfood256;
+    const uecfood100Dir = opts.uecfood100 || imageDirs.uecfood100;
     
     // Check FoodInsSeg
     if (foodinssegDir) {
@@ -110,6 +112,17 @@ export default new Command("seg-index")
         console.log(`✓ UECFood256 found: ${uecfood256Dir}`);
       } else {
         console.warn(`✗ UECFood256 not found at expected path: ${uecfood256Dir}`);
+      }
+    }
+    
+    // Check UECFood100
+    if (uecfood100Dir) {
+      const exists = await checkDatasetExists('uecfood100');
+      if (exists) {
+        datasets.push({ dir: uecfood100Dir, source: "uecfood100" });
+        console.log(`✓ UECFood100 found: ${uecfood100Dir}`);
+      } else {
+        console.warn(`✗ UECFood100 not found at expected path: ${uecfood100Dir}`);
       }
     }
     

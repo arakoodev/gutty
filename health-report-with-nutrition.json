@@ -1,0 +1,291 @@
+{
+  "metadata": {
+    "analysis_date": "2025-08-18T18:34:51.137Z",
+    "input_image": "https://blog.karlrock.com/wp-content/uploads/2017/05/Chole-Bhature-300x279.jpeg",
+    "download_path": "/tmp/gutty-image-1755542073733.jpg",
+    "verticals_analyzed": [
+      "pcos",
+      "ibs"
+    ],
+    "processing_pipeline": "Image → Recipe Matching → Nutrition Mapping → Health Analysis"
+  },
+  "step1_recipe_matching": {
+    "description": "Image analyzed using CLIP embeddings to find similar recipes from database",
+    "candidates_found": 50,
+    "top_candidates": [
+      {
+        "recipe_id": "19106",
+        "title": "Veg Nut Patties",
+        "similarity_score": "0.051",
+        "ingredients_preview": "1 c. cottage cheese, 1 c. bread crumbs, 1 c. ground nuts..."
+      },
+      {
+        "recipe_id": "4523",
+        "title": "Indian Fry Bread 2(Makes About 2 Dozen)",
+        "similarity_score": "0.050",
+        "ingredients_preview": "3 c. all-purpose flour, 1 Tbsp. baking powder, 1/2 tsp. salt..."
+      },
+      {
+        "recipe_id": "59735",
+        "title": "Sopaipillas(Puffy Fried Bread)",
+        "similarity_score": "0.044",
+        "ingredients_preview": "4 c. all-purpose flour, 1 1/4 tsp. salt, 3 tsp. baking powder..."
+      },
+      {
+        "recipe_id": "86126",
+        "title": "Michael'S Lentil Stoup",
+        "similarity_score": "0.043",
+        "ingredients_preview": "4 c. dry lentils, 10 c. water, 1 onion, chopped..."
+      },
+      {
+        "recipe_id": "47806",
+        "title": "Recipe For Happiness",
+        "similarity_score": "0.042",
+        "ingredients_preview": "2 heaping c. patience, 2 handfuls generosity, 1 heart full love..."
+      }
+    ],
+    "llm_consolidation": {
+      "chosen_recipe": "19106",
+      "confidence_indicators": [
+        "Selected from top 10 candidates",
+        "Recipe servings: 4",
+        "Extracted 6 ingredients"
+      ]
+    }
+  },
+  "step2_nutrition_mapping": {
+    "description": "Recipe ingredients mapped to COFID nutrition database and glycemic index data",
+    "ingredient_mapping": [
+      {
+        "ingredient": "Cheese, Brie, rind only",
+        "cofid_match": "Cheese, Brie, rind only",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Bread, brown, average",
+        "cofid_match": "Bread, brown, average",
+        "glycemic_index": 72,
+        "glycemic_load": 11,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "high-gi",
+          "pcos-caution",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Nut, mushroom and rice roast, homemade",
+        "cofid_match": "Nut, mushroom and rice roast, homemade",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Eggs, chicken, scrambled, with semi-skimmed milk",
+        "cofid_match": "Eggs, chicken, scrambled, with semi-skimmed milk",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Onion sauce, made with semi-skimmed milk, homemade",
+        "cofid_match": "Onion sauce, made with semi-skimmed milk, homemade",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 0,
+          "carbs_g": 0,
+          "fat_g": 0,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "high-fodmap",
+          "ibs-caution"
+        ]
+      }
+    ],
+    "totals_calculated": {
+      "calories": 0,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0,
+      "sugars": 0,
+      "sodium": 0,
+      "gi_value": 58,
+      "is_low_gi": false,
+      "is_high_fodmap": true,
+      "health_flags": [
+        "high-fodmap",
+        "ibs-caution"
+      ]
+    },
+    "database_coverage": {
+      "ingredients_found": 5,
+      "total_ingredients": 6,
+      "coverage_percentage": 83
+    },
+    "glycemic_assessment": {
+      "average_gi": 58,
+      "gi_category": "Medium (56-69)"
+    }
+  },
+  "step3_health_analysis": {
+    "description": "Ingredients analyzed against health condition databases and research",
+    "analysis_by_vertical": {
+      "pcos": {
+        "triggers_found": [],
+        "knowledge_base_search": null
+      },
+      "ibs": {
+        "triggers_found": [
+          {
+            "vertical": "ibs",
+            "type": "fodmap_content",
+            "message": "Contains high-FODMAP ingredients that may trigger IBS symptoms",
+            "severity": "caution",
+            "recommendation": "Monitor symptoms or substitute with low-FODMAP alternatives",
+            "ref": "Monash FODMAP research"
+          }
+        ],
+        "knowledge_base_search": null
+      }
+    }
+  },
+  "final_results": {
+    "recipe_identification": {
+      "chosenRecipeId": "19106",
+      "servings": 4,
+      "ingredients": [
+        {
+          "name": "1 c. cottage cheese",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "1 c. bread crumbs",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "1 c. ground nuts",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "4 eggs, beaten",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "1 medium onion",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "1 pkg. George Washington seasoning",
+          "qty": 1,
+          "unit": "serving"
+        }
+      ]
+    },
+    "nutrition_totals": {
+      "calories": 0,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0,
+      "sugars": 0,
+      "sodium": 0,
+      "gi_value": 58,
+      "is_low_gi": false,
+      "is_high_fodmap": true,
+      "health_flags": [
+        "high-fodmap",
+        "ibs-caution"
+      ]
+    },
+    "health_considerations": {
+      "notes": [
+        {
+          "vertical": "ibs",
+          "type": "fodmap_content",
+          "message": "Contains high-FODMAP ingredients that may trigger IBS symptoms",
+          "severity": "caution",
+          "recommendation": "Monitor symptoms or substitute with low-FODMAP alternatives",
+          "ref": "Monash FODMAP research"
+        }
+      ],
+      "evidence": [],
+      "nutrition_flags": [
+        "high-fodmap",
+        "ibs-caution"
+      ]
+    },
+    "summary": {
+      "recipe_id": "19106",
+      "servings": 4,
+      "ingredients_count": 6,
+      "health_flags": 1,
+      "processing_success": true
+    }
+  }
+}

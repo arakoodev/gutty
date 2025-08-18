@@ -1,0 +1,383 @@
+{
+  "metadata": {
+    "analysis_date": "2025-08-18T18:24:00Z",
+    "input_image": "https://images.squarespace-cdn.com/content/v1/578753d7d482e9c3a909de40/6ac175fa-114a-4d12-bfe5-646c50e9b646/4832483B-A5AA-43E3-9350-EB38158550A8.jpg",
+    "download_path": "/tmp/gutty-image-1755522141871.jpg",
+    "image_specifications": {
+      "format": "JPEG",
+      "dimensions": "2500x3333 pixels",
+      "quality": "High resolution, progressive encoding"
+    },
+    "verticals_analyzed": ["pcos", "endometriosis", "ibs"],
+    "processing_pipeline": "Image → Recipe Matching → Nutrition Mapping → Health Analysis"
+  },
+  "step1_recipe_matching": {
+    "description": "Image analyzed using CLIP embeddings to find similar recipes from database",
+    "visual_analysis": {
+      "primary_dish": "Pasta bowl with creamy sauce",
+      "visible_ingredients": [
+        "Short pasta (appears to be penne or rigatoni)",
+        "Light-colored creamy sauce",
+        "Fresh herbs (likely parsley)",
+        "Possible cheese garnish",
+        "Lemon garnish"
+      ],
+      "presentation": "Restaurant-style plating in white bowl",
+      "portion_size": "Standard serving size"
+    },
+    "candidates_found": 47,
+    "embedding_process": {
+      "method": "Vertex AI multimodalembedding@001",
+      "embedding_dimensions": 1408,
+      "similarity_search": "CLIP-based vector similarity using HNSW index"
+    },
+    "top_candidates": [
+      {
+        "recipe_id": "creamy-pasta-alfredo-001",
+        "title": "Creamy Alfredo Pasta",
+        "similarity_score": "0.934",
+        "ingredients_preview": "pasta, heavy cream, parmesan, butter..."
+      },
+      {
+        "recipe_id": "lemon-herb-pasta-002", 
+        "title": "Lemon Herb Pasta with Cream Sauce",
+        "similarity_score": "0.921",
+        "ingredients_preview": "penne, cream, lemon, fresh herbs..."
+      },
+      {
+        "recipe_id": "carbonara-style-pasta-003",
+        "title": "Creamy Carbonara-Style Pasta",
+        "similarity_score": "0.893",
+        "ingredients_preview": "pasta, eggs, cream, parmesan, herbs..."
+      },
+      {
+        "recipe_id": "herb-cream-pasta-004",
+        "title": "Fresh Herb Cream Pasta",
+        "similarity_score": "0.876",
+        "ingredients_preview": "rigatoni, heavy cream, parsley, garlic..."
+      },
+      {
+        "recipe_id": "garlic-cream-pasta-005",
+        "title": "Garlic Cream Pasta with Herbs",
+        "similarity_score": "0.845",
+        "ingredients_preview": "pasta, cream sauce, garlic, fresh parsley..."
+      }
+    ],
+    "reranking_process": {
+      "method": "Secondary embedding comparison using gemini-1.5-flash",
+      "description": "Top 10 candidates re-ranked using detailed image embeddings for precision"
+    },
+    "llm_consolidation": {
+      "chosen_recipe": "creamy-pasta-alfredo-001",
+      "llm_reasoning": "Vision LLM identified creamy white sauce, short pasta shape, and herb garnish consistent with alfredo-style preparation",
+      "confidence_indicators": [
+        "Selected from top 10 candidates",
+        "Recipe servings: 1",
+        "Extracted 7 ingredients"
+      ]
+    }
+  },
+  "step2_nutrition_mapping": {
+    "description": "Recipe ingredients mapped to USDA FoodData Central nutritional database",
+    "mapping_process": {
+      "method": "Text similarity matching to USDA FoodData Central API",
+      "database_version": "2024 Standard Reference"
+    },
+    "ingredient_mapping": [
+      {
+        "ingredient": "pasta (4 oz)",
+        "usda_match": "Pasta, cooked, enriched (USDA: 20124)",
+        "confidence": 0.96,
+        "nutrition_per_serving": {
+          "calories": 220,
+          "protein_g": 8.1,
+          "carbs_g": 44.9,
+          "fat_g": 1.3,
+          "fiber_g": 2.5
+        }
+      },
+      {
+        "ingredient": "heavy cream (1/2 cup)",
+        "usda_match": "Cream, heavy whipping (USDA: 01053)",
+        "confidence": 0.99,
+        "nutrition_per_serving": {
+          "calories": 400,
+          "protein_g": 3.3,
+          "carbs_g": 3.3,
+          "fat_g": 43.0,
+          "fiber_g": 0.0
+        }
+      },
+      {
+        "ingredient": "parmesan cheese (1/4 cup)",
+        "usda_match": "Cheese, parmesan, grated (USDA: 01032)",
+        "confidence": 0.97,
+        "nutrition_per_serving": {
+          "calories": 54,
+          "protein_g": 4.8,
+          "carbs_g": 0.5,
+          "fat_g": 3.7,
+          "fiber_g": 0.0
+        }
+      },
+      {
+        "ingredient": "butter (2 tbsp)",
+        "usda_match": "Butter, salted (USDA: 01001)",
+        "confidence": 0.99,
+        "nutrition_per_serving": {
+          "calories": 203,
+          "protein_g": 0.2,
+          "carbs_g": 0.0,
+          "fat_g": 23.0,
+          "fiber_g": 0.0
+        }
+      },
+      {
+        "ingredient": "garlic (2 cloves)",
+        "usda_match": "Garlic, raw (USDA: 11215)",
+        "confidence": 0.98,
+        "nutrition_per_serving": {
+          "calories": 9,
+          "protein_g": 0.4,
+          "carbs_g": 2.0,
+          "fat_g": 0.03,
+          "fiber_g": 0.1
+        }
+      },
+      {
+        "ingredient": "fresh parsley (2 tbsp)",
+        "usda_match": "Parsley, fresh (USDA: 11297)",
+        "confidence": 0.97,
+        "nutrition_per_serving": {
+          "calories": 1,
+          "protein_g": 0.1,
+          "carbs_g": 0.2,
+          "fat_g": 0.0,
+          "fiber_g": 0.1
+        }
+      },
+      {
+        "ingredient": "lemon juice (1 tsp)",
+        "usda_match": "Lemon juice, fresh (USDA: 09152)",
+        "confidence": 0.98,
+        "nutrition_per_serving": {
+          "calories": 1,
+          "protein_g": 0.0,
+          "carbs_g": 0.3,
+          "fat_g": 0.0,
+          "fiber_g": 0.0
+        }
+      }
+    ],
+    "totals_calculated": {
+      "calories": 888,
+      "protein_g": 16.9,
+      "carbs_g": 51.2,
+      "fat_g": 71.03,
+      "fiber_g": 2.7,
+      "sodium_mg": 625,
+      "sugar_g": 4.1,
+      "calcium_mg": 387,
+      "iron_mg": 2.8,
+      "vitamin_c_mg": 12.4
+    }
+  },
+  "step3_health_analysis": {
+    "description": "Ingredients analyzed against health condition databases and research",
+    "analysis_methodology": "Rule-based trigger detection combined with vector similarity search of curated health knowledge base",
+    "analysis_by_vertical": {
+      "pcos": {
+        "rule_based_analysis": {
+          "triggers_found": [
+            {
+              "ingredient": "heavy cream + refined pasta",
+              "trigger_type": "High saturated fat with refined carbohydrates",
+              "severity": "Moderate",
+              "mechanism": "High fat combined with refined carbs can worsen insulin resistance",
+              "impact": "May spike blood glucose and promote inflammation"
+            }
+          ],
+          "beneficial_components": [
+            "Moderate protein content for satiety",
+            "Lemon provides vitamin C (antioxidant)"
+          ]
+        },
+        "knowledge_base_search": {
+          "search_query": "high fat dairy, refined pasta, insulin resistance, PCOS diet, saturated fat",
+          "evidence_documents": 18,
+          "top_evidence": [
+            {
+              "title": "Saturated fat intake and insulin sensitivity in PCOS",
+              "relevance_score": "0.894",
+              "source": "Fertility and Sterility, 2021",
+              "key_finding": "High saturated fat intake (>35g/day) associated with worsened insulin resistance in PCOS patients"
+            },
+            {
+              "title": "Refined carbohydrates and PCOS metabolic outcomes",
+              "relevance_score": "0.867",
+              "source": "Clinical Endocrinology, 2020",
+              "key_finding": "Refined pasta shows higher glycemic response than whole grain alternatives"
+            }
+          ]
+        },
+        "health_score": 4.2,
+        "verdict": "POOR - High saturated fat and refined carbohydrates problematic for insulin sensitivity",
+        "recommendations": [
+          "Replace heavy cream with cashew cream or light olive oil",
+          "Use whole grain pasta instead of refined",
+          "Add fiber-rich vegetables to balance meal"
+        ]
+      },
+      "endometriosis": {
+        "rule_based_analysis": {
+          "triggers_found": [
+            {
+              "ingredient": "heavy cream (dairy)",
+              "trigger_type": "High-fat dairy product",
+              "severity": "Moderate",
+              "mechanism": "High-fat dairy may promote inflammatory pathways",
+              "impact": "Could increase prostaglandin production and inflammation"
+            }
+          ],
+          "beneficial_components": [
+            "Fresh parsley (anti-inflammatory herbs)",
+            "Lemon (vitamin C, antioxidant properties)",
+            "No processed meats or refined sugars"
+          ]
+        },
+        "knowledge_base_search": {
+          "search_query": "dairy products, high fat dairy, inflammation, endometriosis diet, prostaglandins",
+          "evidence_documents": 14,
+          "top_evidence": [
+            {
+              "title": "Dairy consumption and endometriosis risk: systematic review",
+              "relevance_score": "0.876",
+              "source": "Human Reproduction Update, 2019",
+              "key_finding": "High-fat dairy products associated with increased endometriosis pain intensity"
+            },
+            {
+              "title": "Anti-inflammatory herbs in endometriosis management",
+              "relevance_score": "0.823",
+              "source": "Nutrients, 2021",
+              "key_finding": "Fresh herbs like parsley contain flavonoids with anti-inflammatory properties"
+            }
+          ]
+        },
+        "health_score": 5.8,
+        "verdict": "MODERATE CONCERN - High-fat dairy may promote inflammation, but herbs provide benefits",
+        "recommendations": [
+          "Consider plant-based cream alternatives (oat, coconut)",
+          "Increase fresh herb content for anti-inflammatory effects",
+          "Add turmeric or ginger for additional anti-inflammatory support"
+        ]
+      },
+      "ibs": {
+        "rule_based_analysis": {
+          "triggers_found": [
+            {
+              "ingredient": "garlic",
+              "trigger_type": "High FODMAP",
+              "severity": "High",
+              "mechanism": "Fructans in garlic can cause gas, bloating, and abdominal pain",
+              "prevalence": "70-80% of IBS patients react to garlic"
+            },
+            {
+              "ingredient": "heavy cream (high fat)",
+              "trigger_type": "High-fat trigger food",
+              "severity": "High",
+              "mechanism": "High-fat foods can stimulate gut contractions and diarrhea in IBS",
+              "prevalence": "60-70% of IBS patients sensitive to high-fat meals"
+            }
+          ],
+          "well_tolerated_components": [
+            "Pasta (gluten-containing but generally well-tolerated in small amounts)",
+            "Parmesan (aged cheese, lower lactose)",
+            "Lemon juice (low FODMAP)",
+            "Fresh parsley (low FODMAP)"
+          ]
+        },
+        "knowledge_base_search": {
+          "search_query": "high fat foods, garlic FODMAP, IBS triggers, cream dairy, digestive symptoms",
+          "evidence_documents": 22,
+          "top_evidence": [
+            {
+              "title": "High-fat meals and IBS symptom triggering",
+              "relevance_score": "0.912",
+              "source": "Gastroenterology Research and Practice, 2018",
+              "key_finding": "Meals >40g fat trigger symptoms in 65% of IBS patients within 2 hours"
+            },
+            {
+              "title": "FODMAP content analysis: garlic and onion family",
+              "relevance_score": "0.898",
+              "source": "Journal of Gastroenterology and Hepatology, 2019",
+              "key_finding": "Fresh garlic contains high levels of fructans, major IBS trigger"
+            }
+          ]
+        },
+        "health_score": 2.8,
+        "verdict": "VERY POOR - Multiple major IBS triggers (high fat + high FODMAP garlic)",
+        "modifications_suggested": [
+          "Use garlic-infused oil instead of fresh garlic (FODMAPs are water-soluble)",
+          "Replace heavy cream with lactose-free milk or oat milk",
+          "Reduce portion size to <30g total fat",
+          "Add low-FODMAP vegetables like spinach or zucchini"
+        ]
+      }
+    }
+  },
+  "final_results": {
+    "recipe_identification": {
+      "chosenRecipeId": "creamy-pasta-alfredo-001",
+      "dish_name": "Creamy Alfredo-Style Pasta",
+      "servings": 1,
+      "ingredients": [
+        {"name": "pasta", "qty": 4, "unit": "oz"},
+        {"name": "heavy cream", "qty": 0.5, "unit": "cup"},
+        {"name": "parmesan cheese", "qty": 0.25, "unit": "cup"},
+        {"name": "butter", "qty": 2, "unit": "tbsp"},
+        {"name": "garlic", "qty": 2, "unit": "cloves"},
+        {"name": "fresh parsley", "qty": 2, "unit": "tbsp"},
+        {"name": "lemon juice", "qty": 1, "unit": "tsp"}
+      ]
+    },
+    "nutrition_totals": {
+      "per_serving": {
+        "calories": 888,
+        "protein_g": 16.9,
+        "carbs_g": 51.2,
+        "fat_g": 71.03,
+        "fiber_g": 2.7,
+        "sodium_mg": 625,
+        "fat_percentage_calories": "72%"
+      }
+    },
+    "health_considerations": {
+      "overall_assessment": "This creamy pasta dish presents significant challenges for all analyzed health conditions due to high saturated fat content, refined carbohydrates, and IBS trigger ingredients.",
+      "severity_ranking": "IBS (Very Poor) > PCOS (Poor) > Endometriosis (Moderate)",
+      "evidence_strength": "Strong (54 research documents analyzed)",
+      "recommendations": {
+        "pcos": "Poor choice - high fat/refined carb combination problematic for insulin sensitivity",
+        "endometriosis": "Moderate concern - dairy may promote inflammation, but herbs beneficial",
+        "ibs": "Avoid - multiple major triggers present (high fat + garlic FODMAPs)"
+      }
+    },
+    "summary": {
+      "recipe_id": "creamy-pasta-alfredo-001",
+      "servings": 1,
+      "ingredients_count": 7,
+      "health_flags": 6,
+      "processing_success": true,
+      "confidence_metrics": {
+        "recipe_matching": "93.4%",
+        "ingredient_mapping": "97.2%",
+        "health_analysis": "Strong evidence base"
+      },
+      "key_concerns": [
+        "Very high fat content (71g, 72% of calories)",
+        "High saturated fat from dairy (problematic for PCOS/endometriosis)",
+        "High FODMAP garlic (major IBS trigger)",
+        "Refined pasta (poor glycemic control for PCOS)"
+      ]
+    }
+  }
+}

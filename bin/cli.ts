@@ -23,6 +23,10 @@ import segIndex from "../src/cli/seg-index";
 import segExtract from "../src/cli/seg-extract";
 import segRetrieve from "../src/cli/seg-retrieve";
 import segStatus from "../src/cli/seg-status";
+import recipeIndex from "../src/cli/recipe-index";
+import nutritionIndex from "../src/cli/nutrition-index";
+import giIndex from "../src/cli/gi-index";
+import fodmapIndex from "../src/cli/fodmap-index";
 
 const program = new Command();
 program.name("gutty").description("Photo → Recipe → Calories (standalone CLI)");
@@ -46,6 +50,10 @@ program.addCommand(segIndex);
 program.addCommand(segExtract);
 program.addCommand(segRetrieve);
 program.addCommand(segStatus);
+program.addCommand(recipeIndex);
+program.addCommand(nutritionIndex);
+program.addCommand(giIndex);
+program.addCommand(fodmapIndex);
 program.addCommand(validate);
 program.addCommand(reset);
 
