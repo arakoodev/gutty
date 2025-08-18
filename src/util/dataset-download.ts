@@ -25,6 +25,11 @@ export const RESEARCH_DATASETS: DatasetConfig[] = [
     name: "FoodInsSeg", 
     url: "https://drive.google.com/file/d/1Wa8_j4flJOMM6a2QGpiPga0r1GC__Rg2/view?usp=drive_link",
     destination: CFG.datasets.foodinsseg.dir
+  },
+  {
+    name: "UECFood256",
+    url: "https://huggingface.co/datasets/tiennv/uecfood256",
+    destination: CFG.datasets.uecfood256.dir
   }
 ];
 
@@ -175,15 +180,19 @@ export function getDatasetPaths(): { foodseg103: string; foodinsseg: string } {
 /**
  * Check if datasets exist at expected locations
  */
-export async function checkDatasetExists(dataset: 'foodseg103' | 'foodinsseg'): Promise<boolean> {
+export async function checkDatasetExists(dataset: 'foodseg103' | 'foodinsseg' | 'uecfood256'): Promise<boolean> {
   try {
     if (dataset === 'foodseg103') {
       await fs.access(CFG.datasets.foodseg103.dataDir);
       return true;
-    } else {
+    } else if (dataset === 'foodinsseg') {
       await fs.access(CFG.datasets.foodinsseg.imageDir);
       const files = await fs.readdir(CFG.datasets.foodinsseg.imageDir);
       return files.filter(f => f.endsWith('.jpg')).length > 100;
+    } else {
+      await fs.access(CFG.datasets.uecfood256.imageDir);
+      const files = await fs.readdir(CFG.datasets.uecfood256.imageDir);
+      return files.filter(f => f.match(/\.(jpg|jpeg|png)$/i)).length > 100;
     }
   } catch {
     return false;
@@ -193,9 +202,10 @@ export async function checkDatasetExists(dataset: 'foodseg103' | 'foodinsseg'): 
 /**
  * Get actual image directories for indexing
  */
-export function getImageDirectories(): { foodseg103?: string; foodinsseg?: string } {
+export function getImageDirectories(): { foodseg103?: string; foodinsseg?: string; uecfood256?: string } {
   return {
     foodseg103: CFG.datasets.foodseg103.dataDir, // parquet files
-    foodinsseg: CFG.datasets.foodinsseg.imageDir // jpg files
+    foodinsseg: CFG.datasets.foodinsseg.imageDir, // jpg files
+    uecfood256: CFG.datasets.uecfood256.imageDir // jpg/png files
   };
 }

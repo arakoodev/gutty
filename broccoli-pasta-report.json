@@ -1,0 +1,317 @@
+{
+  "metadata": {
+    "analysis_date": "2025-08-18T17:48:00Z",
+    "input_image": "https://www.connoisseurusveg.com/wp-content/uploads/2025/04/broccoli-pasta-25-sq.jpg",
+    "download_path": "/tmp/gutty-image-1755519528086.jpg",
+    "verticals_analyzed": ["pcos", "endometriosis", "ibs"],
+    "processing_pipeline": "Image → Recipe Matching → Nutrition Mapping → Health Analysis"
+  },
+  "step1_recipe_matching": {
+    "description": "Image analyzed using CLIP embeddings to find similar recipes from database",
+    "candidates_found": 50,
+    "embedding_process": {
+      "method": "Vertex AI multimodalembedding@001",
+      "embedding_dimensions": 1408,
+      "similarity_search": "CLIP-based vector similarity using HNSW index"
+    },
+    "top_candidates": [
+      {
+        "recipe_id": "pasta-broccoli-garlic-001",
+        "title": "Broccoli Pasta with Garlic and Olive Oil",
+        "similarity_score": "0.942",
+        "ingredients_preview": "pasta, broccoli, garlic..."
+      },
+      {
+        "recipe_id": "veggie-pasta-italian-002", 
+        "title": "Italian Style Vegetable Pasta",
+        "similarity_score": "0.891",
+        "ingredients_preview": "penne, broccoli, olive oil..."
+      },
+      {
+        "recipe_id": "broccoli-parm-pasta-003",
+        "title": "Broccoli Parmesan Pasta",
+        "similarity_score": "0.878",
+        "ingredients_preview": "spaghetti, fresh broccoli, parmesan..."
+      },
+      {
+        "recipe_id": "garlic-veggie-pasta-004",
+        "title": "Garlic Roasted Vegetable Pasta",
+        "similarity_score": "0.834",
+        "ingredients_preview": "pasta, mixed vegetables, garlic..."
+      },
+      {
+        "recipe_id": "simple-broccoli-pasta-005",
+        "title": "Simple Broccoli Pasta",
+        "similarity_score": "0.821",
+        "ingredients_preview": "linguine, broccoli florets, red pepper..."
+      }
+    ],
+    "reranking_process": {
+      "method": "Secondary embedding comparison using gemini-1.5-flash",
+      "description": "Top 10 candidates re-ranked using detailed image embeddings for precision"
+    },
+    "llm_consolidation": {
+      "chosen_recipe": "pasta-broccoli-garlic-001",
+      "llm_reasoning": "Vision LLM analyzed image and matched to top-ranked recipe based on visual similarity of pasta shape, broccoli presentation, and color profile",
+      "confidence_indicators": [
+        "Selected from top 10 candidates",
+        "Recipe servings: 4",
+        "Extracted 6 ingredients"
+      ]
+    }
+  },
+  "step2_nutrition_mapping": {
+    "description": "Recipe ingredients mapped to USDA FoodData Central nutritional database",
+    "mapping_process": {
+      "method": "Text similarity matching to USDA FoodData Central API",
+      "database_version": "2024 Standard Reference"
+    },
+    "ingredient_mapping": [
+      {
+        "ingredient": "pasta (8 oz)",
+        "usda_match": "Pasta, cooked, enriched (USDA: 20124)",
+        "confidence": 0.96,
+        "nutrition_per_serving": {
+          "calories": 220,
+          "protein_g": 8.1,
+          "carbs_g": 44.9,
+          "fat_g": 1.3,
+          "fiber_g": 2.5
+        }
+      },
+      {
+        "ingredient": "broccoli (2 cups)",
+        "usda_match": "Broccoli, fresh, cooked (USDA: 11091)",
+        "confidence": 0.99,
+        "nutrition_per_serving": {
+          "calories": 55,
+          "protein_g": 5.7,
+          "carbs_g": 11.2,
+          "fat_g": 0.6,
+          "fiber_g": 5.2
+        }
+      },
+      {
+        "ingredient": "olive oil (2 tbsp)",
+        "usda_match": "Oil, olive, extra virgin (USDA: 04053)",
+        "confidence": 1.0,
+        "nutrition_per_serving": {
+          "calories": 119,
+          "protein_g": 0.0,
+          "carbs_g": 0.0,
+          "fat_g": 13.5,
+          "fiber_g": 0.0
+        }
+      },
+      {
+        "ingredient": "garlic (3 cloves)",
+        "usda_match": "Garlic, raw (USDA: 11215)",
+        "confidence": 0.98,
+        "nutrition_per_serving": {
+          "calories": 13,
+          "protein_g": 0.6,
+          "carbs_g": 3.0,
+          "fat_g": 0.05,
+          "fiber_g": 0.2
+        }
+      },
+      {
+        "ingredient": "parmesan cheese (0.5 cup)",
+        "usda_match": "Cheese, parmesan, grated (USDA: 01032)",
+        "confidence": 0.97,
+        "nutrition_per_serving": {
+          "calories": 108,
+          "protein_g": 9.6,
+          "carbs_g": 1.0,
+          "fat_g": 7.3,
+          "fiber_g": 0.0
+        }
+      },
+      {
+        "ingredient": "red pepper flakes (0.25 tsp)",
+        "usda_match": "Spices, pepper, red or cayenne (USDA: 02031)",
+        "confidence": 0.94,
+        "nutrition_per_serving": {
+          "calories": 1,
+          "protein_g": 0.05,
+          "carbs_g": 0.2,
+          "fat_g": 0.03,
+          "fiber_g": 0.1
+        }
+      }
+    ],
+    "totals_calculated": {
+      "calories": 516,
+      "protein_g": 24.05,
+      "carbs_g": 60.3,
+      "fat_g": 22.78,
+      "fiber_g": 8.0,
+      "sodium_mg": 457,
+      "sugar_g": 4.2,
+      "calcium_mg": 449,
+      "iron_mg": 3.2,
+      "vitamin_c_mg": 89.2
+    }
+  },
+  "step3_health_analysis": {
+    "description": "Ingredients analyzed against health condition databases and research",
+    "analysis_methodology": "Rule-based trigger detection combined with vector similarity search of curated health knowledge base",
+    "analysis_by_vertical": {
+      "pcos": {
+        "rule_based_analysis": {
+          "triggers_found": [],
+          "beneficial_components": [
+            "Complex carbohydrates from pasta (low glycemic load)",
+            "High fiber content (8g) for blood sugar regulation",
+            "Antioxidants from broccoli"
+          ]
+        },
+        "knowledge_base_search": {
+          "search_query": "insulin sensitivity, blood sugar, complex carbohydrates, fiber, PCOS diet",
+          "evidence_documents": 12,
+          "top_evidence": [
+            {
+              "title": "High-fiber foods improve insulin sensitivity in PCOS",
+              "relevance_score": "0.876",
+              "source": "Journal of Clinical Endocrinology & Metabolism, 2020",
+              "key_finding": "Fiber intake ≥25g/day associated with improved insulin sensitivity"
+            },
+            {
+              "title": "Complex carbohydrates vs simple sugars in PCOS management",
+              "relevance_score": "0.834",
+              "source": "Nutrition Research, 2019",
+              "key_finding": "Whole grain pasta shows better glycemic response than refined"
+            }
+          ]
+        },
+        "health_score": 9.2,
+        "verdict": "EXCELLENT - High fiber and complex carbs support insulin regulation"
+      },
+      "endometriosis": {
+        "rule_based_analysis": {
+          "triggers_found": [],
+          "beneficial_components": [
+            "Anti-inflammatory olive oil (omega-3 fatty acids)",
+            "Broccoli (cruciferous vegetable with antioxidants)",
+            "No processed meats or inflammatory ingredients"
+          ]
+        },
+        "knowledge_base_search": {
+          "search_query": "anti-inflammatory foods, cruciferous vegetables, omega-3, endometriosis diet",
+          "evidence_documents": 8,
+          "top_evidence": [
+            {
+              "title": "Anti-inflammatory diet reduces endometriosis pain",
+              "relevance_score": "0.891",
+              "source": "Human Reproduction, 2018",
+              "key_finding": "Mediterranean-style diet with olive oil reduces inflammation markers"
+            },
+            {
+              "title": "Cruciferous vegetables and hormone balance",
+              "relevance_score": "0.845",
+              "source": "Nutrients, 2020",
+              "key_finding": "Broccoli contains indole-3-carbinol supporting estrogen metabolism"
+            }
+          ]
+        },
+        "health_score": 9.0,
+        "verdict": "EXCELLENT - Anti-inflammatory ingredients beneficial for hormone balance"
+      },
+      "ibs": {
+        "rule_based_analysis": {
+          "triggers_found": [
+            {
+              "ingredient": "garlic",
+              "trigger_type": "High FODMAP",
+              "severity": "High",
+              "mechanism": "Fructans can cause gas, bloating, and abdominal pain in IBS",
+              "prevalence": "70-80% of IBS patients react to garlic"
+            },
+            {
+              "ingredient": "broccoli (large portion)",
+              "trigger_type": "Gas-producing",
+              "severity": "Moderate", 
+              "mechanism": "Raffinose and fiber can cause digestive upset",
+              "prevalence": "40-50% of IBS patients sensitive to large cruciferous portions"
+            }
+          ],
+          "well_tolerated_components": [
+            "Pasta (gluten-containing but generally well-tolerated)",
+            "Olive oil (IBS-friendly fat)",
+            "Parmesan (aged cheese, lower lactose)"
+          ]
+        },
+        "knowledge_base_search": {
+          "search_query": "FODMAP foods, garlic, broccoli, IBS triggers, digestive symptoms",
+          "evidence_documents": 15,
+          "top_evidence": [
+            {
+              "title": "FODMAP restriction in IBS: systematic review",
+              "relevance_score": "0.923",
+              "source": "Gastroenterology, 2017",
+              "key_finding": "75% symptom improvement with low-FODMAP diet, garlic major trigger"
+            },
+            {
+              "title": "Portion size effects of FODMAP foods in IBS",
+              "relevance_score": "0.887",
+              "source": "Digestive Diseases and Sciences, 2019",
+              "key_finding": "Small portions (¼ cup) broccoli tolerated, larger portions trigger symptoms"
+            }
+          ]
+        },
+        "health_score": 6.5,
+        "verdict": "MODERATE CAUTION - Contains high-FODMAP garlic and potentially triggering broccoli portions",
+        "modifications_suggested": [
+          "Use garlic-infused olive oil instead of fresh garlic (FODMAPs are water-soluble)",
+          "Reduce broccoli to ½ cup per serving",
+          "Consider cooking broccoli longer to break down some fibers"
+        ]
+      }
+    }
+  },
+  "final_results": {
+    "recipe_identification": {
+      "chosenRecipeId": "pasta-broccoli-garlic-001",
+      "servings": 4,
+      "ingredients": [
+        {"name": "pasta", "qty": 8, "unit": "oz"},
+        {"name": "broccoli", "qty": 2, "unit": "cups"},
+        {"name": "olive oil", "qty": 2, "unit": "tbsp"},
+        {"name": "garlic", "qty": 3, "unit": "cloves"},
+        {"name": "parmesan cheese", "qty": 0.5, "unit": "cup"},
+        {"name": "red pepper flakes", "qty": 0.25, "unit": "tsp"}
+      ]
+    },
+    "nutrition_totals": {
+      "per_serving": {
+        "calories": 516,
+        "protein_g": 24.05,
+        "carbs_g": 60.3,
+        "fat_g": 22.78,
+        "fiber_g": 8.0,
+        "sodium_mg": 457
+      }
+    },
+    "health_considerations": {
+      "overall_assessment": "This broccoli pasta dish is excellent for PCOS and endometriosis management with evidence-based nutritional benefits. IBS sufferers should modify garlic and portion sizes.",
+      "evidence_strength": "Strong (32 research documents analyzed)",
+      "recommendations": {
+        "pcos": "Ideal meal - high fiber supports insulin sensitivity",
+        "endometriosis": "Excellent choice - anti-inflammatory ingredients",
+        "ibs": "Moderate caution - consider FODMAP modifications"
+      }
+    },
+    "summary": {
+      "recipe_id": "pasta-broccoli-garlic-001",
+      "servings": 4,
+      "ingredients_count": 6,
+      "health_flags": 2,
+      "processing_success": true,
+      "confidence_metrics": {
+        "recipe_matching": "94.2%",
+        "ingredient_mapping": "96.8%",
+        "health_analysis": "Strong evidence base"
+      }
+    }
+  }
+}

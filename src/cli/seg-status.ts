@@ -72,6 +72,11 @@ export default new Command("seg-status")
         }
       }
       
+      if (imageDirs.uecfood256) {
+        const uecfood256Images = await walkDirectory(imageDirs.uecfood256);
+        console.log(`📁 UECFood256 images available: ${uecfood256Images.length}`);
+      }
+      
       console.log("");
       
       // Check progress file

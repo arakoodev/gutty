@@ -9,6 +9,10 @@ export const CFG = {
     foodseg103: {
       dir: "./datasets/foodseg103", 
       dataDir: "./datasets/foodseg103/data"
+    },
+    uecfood256: {
+      dir: "./datasets/uecfood256",
+      imageDir: "./datasets/uecfood256/images"
     }
   },
   providers: {
