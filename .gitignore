@@ -3,3 +3,15 @@ dist
 tmp
 lancedb
 .env
+
+# Research datasets and intermediate data
+datasets/
+test-images/
+test-subset/
+Health_KB/
+Gutty_Data/
+
+# Service account and credentials
+service-account.json
+*.pem
+*.key

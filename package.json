@@ -1,7 +1,7 @@
 {
   "name": "@wootz/gutty",
   "version": "0.4.1",
-  "description": "Photo \u2192 Recipe retrieval \u2192 USDA-backed calories. Standalone CLI (no backend).",
+  "description": "Photo → Recipe retrieval → USDA-backed calories. Standalone CLI (no backend).",
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -17,17 +17,21 @@
     "gutty": "node bin/cli.js"
   },
   "dependencies": {
+    "@fal-ai/client": "^1.1.0",
+    "@google-cloud/aiplatform": "^5.5.0",
     "@google-cloud/vertexai": "^1.7.0",
+    "@huggingface/hub": "^2.4.1",
     "@lancedb/lancedb": "^0.7.0",
     "commander": "^12.1.0",
     "dotenv": "^16.4.5",
+    "google-auth-library": "^10.2.1",
     "node-fetch": "^3.3.2",
-    "zod": "^3.23.8",
-    "tsx": "^4.16.2",
     "replicate": "^1.0.0",
-    "@fal-ai/client": "^1.1.0"
+    "tsx": "^4.16.2",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "execa": "^9.6.0",
     "tsup": "^8.0.2",
     "typescript": "^5.5.4",
     "vitest": "^2.0.5"

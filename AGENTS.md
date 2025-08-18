@@ -117,12 +117,12 @@ node bin/cli.js calories --recipe tmp/recipe.json --out analysis.json
 # one-shot pipeline
 node bin/cli.js recipe-analyze --image Gutty_Data/000001/img1.jpg --out analysis.json
 
-# health knowledge (pcos/endometriosis/pregnancy)
+# health knowledge (pcos/endometriosis/pregnancy/ibs)
 node bin/cli.js health-ingest --dir ./Health_KB
 node bin/cli.js health-embed
 node bin/cli.js health-build-index
 node bin/cli.js health-query --vertical pregnancy --query "unpasteurized cheese, deli meat"
-node bin/cli.js health-annotate --recipe tmp/recipe.json --verticals pregnancy,pcos,endometriosis --out tmp/health_annotations.json
+node bin/cli.js health-annotate --recipe tmp/recipe.json --verticals pregnancy,pcos,endometriosis,ibs --out tmp/health_annotations.json
 ```
 
 ---
@@ -155,7 +155,7 @@ node bin/cli.js health-annotate --recipe tmp/recipe.json --verticals pregnancy,p
 
 ---
 
-## 9) Health‑Knowledge Verticals (PCOS/PCOD, Endometriosis, Pregnancy)
+## 9) Health‑Knowledge Verticals (PCOS/PCOD, Endometriosis, Pregnancy, IBS)
 
 **Purpose**: annotate detected ingredients with **evidence‑backed notes**. Examples:
 - **Pregnancy**:

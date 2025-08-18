@@ -36,7 +36,7 @@ export async function getAllRows(table:any): Promise<any[]> {
 export async function createIndex(tableName:string, column:string) {
   const db = await connectDB();
   const t = await db.openTable(tableName);
-  await t.createIndex({ column, indexType: "HNSW", metricType: "cosine" });
+  await t.createIndex(column, { indexType: "HNSW", metricType: "cosine" });
 }
 
 export async function annSearch(tableName:string, column:string, emb:Float32Array, limit:number, filter?:any) {

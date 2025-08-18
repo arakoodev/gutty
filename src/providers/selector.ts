@@ -15,10 +15,6 @@ export function getProvider(): Provider { return vertex; }
 export async function withProvider<T>(fn:(p:Provider)=>Promise<T>) { return await fn(getProvider()); }
 
 export async function withFallback<T>(fn:(p:Provider)=>Promise<T>): Promise<T> {
-  const chain: Provider[] = [vertex, replicateApi as any, falApi as any];
-  let lastErr:any;
-  for (const p of chain) {
-    try { return await fn(p); } catch (e:any) { lastErr = e; }
-  }
-  throw lastErr || new Error("All providers failed");
+  // Only use Vertex AI - no fallbacks
+  return await fn(vertex);
 }
