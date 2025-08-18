@@ -71,85 +71,112 @@ async function parseCofidExcel(filePath: string): Promise<CofidNutrition[]> {
   console.log(`📊 Parsing COFID Excel file: ${filePath}`);
   
   const workbook = XLSX.readFile(filePath);
-  
-  // The COFID dataset typically has multiple sheets - we want the main nutrition data
   const sheetNames = workbook.SheetNames;
   console.log(`📋 Available sheets: ${sheetNames.join(', ')}`);
   
-  // Look for the main nutrition sheet (usually named something like "Proximates and inorganics", "Main data", etc.)
-  let targetSheet = sheetNames.find(name => 
-    name.toLowerCase().includes('proximate') || 
-    name.toLowerCase().includes('main') ||
-    name.toLowerCase().includes('data') ||
-    name.includes('1.3')  // Common COFID versioning
-  );
+  // Parse multiple sheets to get complete nutrition data
+  const proximatesSheet = workbook.Sheets['1.3 Proximates'];
+  const inorganicsSheet = workbook.Sheets['1.4 Inorganics'];
+  const vitaminsSheet = workbook.Sheets['1.5 Vitamins'];
   
-  if (!targetSheet) {
-    targetSheet = sheetNames[0]; // Fallback to first sheet
+  if (!proximatesSheet) {
+    throw new Error('Could not find 1.3 Proximates sheet in COFID file');
   }
   
-  console.log(`🎯 Using sheet: ${targetSheet}`);
+  console.log(`🎯 Parsing proximates, inorganics, and vitamins sheets`);
   
-  const worksheet = workbook.Sheets[targetSheet];
-  const data = XLSX.utils.sheet_to_json(worksheet);
+  // Convert sheets to JSON
+  const proximatesData = XLSX.utils.sheet_to_json(proximatesSheet);
+  const inorganicsData = inorganicsSheet ? XLSX.utils.sheet_to_json(inorganicsSheet) : [];
+  const vitaminsData = vitaminsSheet ? XLSX.utils.sheet_to_json(vitaminsSheet) : [];
   
-  console.log(`📝 Found ${data.length} rows in sheet`);
+  // Create lookup maps for joining data by Food Code
+  const inorganicsMap = new Map();
+  inorganicsData.forEach((row: any) => {
+    const foodCode = row[' '] || row['Food Code']; // Different header in inorganics sheet
+    if (foodCode) {
+      inorganicsMap.set(foodCode, row);
+    }
+  });
+  
+  const vitaminsMap = new Map();
+  vitaminsData.forEach((row: any) => {
+    const foodCode = row[' '] || row['Food Code'];
+    if (foodCode) {
+      vitaminsMap.set(foodCode, row);
+    }
+  });
+  
+  console.log(`📝 Found ${proximatesData.length} proximates rows, ${inorganicsData.length} inorganics rows, ${vitaminsData.length} vitamin rows`);
   
   const nutritionData: CofidNutrition[] = [];
   
-  for (const row of data) {
+  for (const row of proximatesData) {
     try {
-      // COFID Excel structure may vary - adapt field names as needed
+      const foodCode = String(row['Food Code'] || '');
+      
+      // Skip header rows or empty entries
+      if (!foodCode || foodCode === 'undefined' || !row['Food Name']) {
+        continue;
+      }
+      
+      // Get corresponding data from other sheets
+      const inorganics = inorganicsMap.get(foodCode) || {};
+      const vitamins = vitaminsMap.get(foodCode) || {};
+      
+      // COFID Excel column mapping - using actual COFID 2021 header names
       const entry: CofidNutrition = {
-        food_code: String(row['Food Code'] || row['Code'] || row['ID'] || ''),
-        food_name: String(row['Food Name'] || row['Description'] || row['Name'] || ''),
-        description: String(row['Description'] || row['Food Name'] || ''),
+        food_code: foodCode,
+        food_name: String(row['Food Name'] || ''),
+        description: String(row['Description'] || ''),
         main_data_references: String(row['Main data references'] || ''),
-        energy_kcal: parseFloat(String(row['Energy, kcal'] || row['Energy'] || 0)) || 0,
-        energy_kj: parseFloat(String(row['Energy, kJ'] || 0)) || 0,
-        water_g: parseFloat(String(row['Water'] || 0)) || 0,
-        total_nitrogen_g: parseFloat(String(row['Total nitrogen'] || 0)) || 0,
-        protein_g: parseFloat(String(row['Protein'] || 0)) || 0,
-        fat_g: parseFloat(String(row['Fat'] || row['Total fat'] || 0)) || 0,
-        saturated_fatty_acids_g: parseFloat(String(row['Saturated fatty acids'] || 0)) || 0,
-        monounsaturated_fatty_acids_g: parseFloat(String(row['Monounsaturated fatty acids'] || 0)) || 0,
-        polyunsaturated_fatty_acids_g: parseFloat(String(row['Polyunsaturated fatty acids'] || 0)) || 0,
-        carbohydrate_g: parseFloat(String(row['Carbohydrate'] || row['Total carbohydrate'] || 0)) || 0,
-        total_sugars_g: parseFloat(String(row['Total sugars'] || row['Sugars'] || 0)) || 0,
-        glucose_g: parseFloat(String(row['Glucose'] || 0)) || 0,
-        fructose_g: parseFloat(String(row['Fructose'] || 0)) || 0,
-        sucrose_g: parseFloat(String(row['Sucrose'] || 0)) || 0,
-        maltose_g: parseFloat(String(row['Maltose'] || 0)) || 0,
-        lactose_g: parseFloat(String(row['Lactose'] || 0)) || 0,
-        starch_g: parseFloat(String(row['Starch'] || 0)) || 0,
-        nsp_aoac_fibre_g: parseFloat(String(row['NSP AOAC fibre'] || row['Fibre'] || 0)) || 0,
-        cholesterol_mg: parseFloat(String(row['Cholesterol'] || 0)) || 0,
-        sodium_mg: parseFloat(String(row['Sodium'] || 0)) || 0,
-        potassium_mg: parseFloat(String(row['Potassium'] || 0)) || 0,
-        calcium_mg: parseFloat(String(row['Calcium'] || 0)) || 0,
-        magnesium_mg: parseFloat(String(row['Magnesium'] || 0)) || 0,
-        phosphorus_mg: parseFloat(String(row['Phosphorus'] || 0)) || 0,
-        iron_mg: parseFloat(String(row['Iron'] || 0)) || 0,
-        copper_mg: parseFloat(String(row['Copper'] || 0)) || 0,
-        zinc_mg: parseFloat(String(row['Zinc'] || 0)) || 0,
-        chloride_mg: parseFloat(String(row['Chloride'] || 0)) || 0,
-        manganese_mg: parseFloat(String(row['Manganese'] || 0)) || 0,
-        selenium_ug: parseFloat(String(row['Selenium'] || 0)) || 0,
-        iodine_ug: parseFloat(String(row['Iodine'] || 0)) || 0,
-        vitamin_a_retinol_equivalent_ug: parseFloat(String(row['Vitamin A retinol equivalent'] || row['Vitamin A'] || 0)) || 0,
-        vitamin_d_ug: parseFloat(String(row['Vitamin D'] || 0)) || 0,
-        vitamin_e_mg: parseFloat(String(row['Vitamin E'] || 0)) || 0,
-        vitamin_k1_ug: parseFloat(String(row['Vitamin K1'] || 0)) || 0,
-        thiamin_mg: parseFloat(String(row['Thiamin'] || row['Vitamin B1'] || 0)) || 0,
-        riboflavin_mg: parseFloat(String(row['Riboflavin'] || row['Vitamin B2'] || 0)) || 0,
-        niacin_mg: parseFloat(String(row['Niacin'] || row['Vitamin B3'] || 0)) || 0,
-        tryptophan_60_mg: parseFloat(String(row['Tryptophan/60'] || 0)) || 0,
-        vitamin_b6_mg: parseFloat(String(row['Vitamin B6'] || 0)) || 0,
-        vitamin_b12_ug: parseFloat(String(row['Vitamin B12'] || 0)) || 0,
-        folate_ug: parseFloat(String(row['Folate'] || 0)) || 0,
-        pantothenate_mg: parseFloat(String(row['Pantothenate'] || row['Pantothenic acid'] || 0)) || 0,
-        biotin_ug: parseFloat(String(row['Biotin'] || 0)) || 0,
-        vitamin_c_mg: parseFloat(String(row['Vitamin C'] || 0)) || 0,
+        energy_kcal: parseFloat(String(row['Energy (kcal) (kcal)'] || 0)) || 0,
+        energy_kj: parseFloat(String(row['Energy (kJ) (kJ)'] || 0)) || 0,
+        water_g: parseFloat(String(row['Water (g)'] || 0)) || 0,
+        total_nitrogen_g: parseFloat(String(row['Total nitrogen (g)'] || 0)) || 0,
+        protein_g: parseFloat(String(row['Protein (g)'] || 0)) || 0,
+        fat_g: parseFloat(String(row['Fat (g)'] || 0)) || 0,
+        saturated_fatty_acids_g: parseFloat(String(row['Sat FA excl Br /100g food (g)'] || 0)) || 0,
+        monounsaturated_fatty_acids_g: parseFloat(String(row['Mono FA /100g food (g)'] || 0)) || 0,
+        polyunsaturated_fatty_acids_g: parseFloat(String(row['Poly FA /100g food (g)'] || 0)) || 0,
+        carbohydrate_g: parseFloat(String(row['Carbohydrate (g)'] || 0)) || 0,
+        total_sugars_g: parseFloat(String(row['Total sugars (g)'] || 0)) || 0,
+        glucose_g: parseFloat(String(row['Glucose (g)'] || 0)) || 0,
+        fructose_g: parseFloat(String(row['Fructose (g)'] || 0)) || 0,
+        sucrose_g: parseFloat(String(row['Sucrose (g)'] || 0)) || 0,
+        maltose_g: parseFloat(String(row['Maltose (g)'] || 0)) || 0,
+        lactose_g: parseFloat(String(row['Lactose (g)'] || 0)) || 0,
+        starch_g: parseFloat(String(row['Starch (g)'] || 0)) || 0,
+        nsp_aoac_fibre_g: parseFloat(String(row['AOAC fibre (g)'] || 0)) || 0,
+        cholesterol_mg: parseFloat(String(row['Cholesterol (mg)'] || 0)) || 0,
+        // Minerals from inorganics sheet
+        sodium_mg: parseFloat(String(inorganics['Sodium (mg)'] || 0)) || 0,
+        potassium_mg: parseFloat(String(inorganics['Potassium (mg)'] || 0)) || 0,
+        calcium_mg: parseFloat(String(inorganics['Calcium (mg)'] || 0)) || 0,
+        magnesium_mg: parseFloat(String(inorganics['Magnesium (mg)'] || 0)) || 0,
+        phosphorus_mg: parseFloat(String(inorganics['Phosphorus (mg)'] || 0)) || 0,
+        iron_mg: parseFloat(String(inorganics['Iron (mg)'] || 0)) || 0,
+        copper_mg: parseFloat(String(inorganics['Copper (mg)'] || 0)) || 0,
+        zinc_mg: parseFloat(String(inorganics['Zinc (mg)'] || 0)) || 0,
+        chloride_mg: parseFloat(String(inorganics['Chloride (mg)'] || 0)) || 0,
+        manganese_mg: parseFloat(String(inorganics['Manganese (mg)'] || 0)) || 0,
+        selenium_ug: parseFloat(String(inorganics['Selenium (µg)'] || 0)) || 0,
+        iodine_ug: parseFloat(String(inorganics['Iodine (µg)'] || 0)) || 0,
+        // Vitamins from vitamins sheet
+        vitamin_a_retinol_equivalent_ug: parseFloat(String(vitamins['Retinol Equivalent (µg)'] || 0)) || 0,
+        vitamin_d_ug: parseFloat(String(vitamins['Vitamin D (µg)'] || 0)) || 0,
+        vitamin_e_mg: parseFloat(String(vitamins['Vitamin E (mg)'] || 0)) || 0,
+        vitamin_k1_ug: parseFloat(String(vitamins['Vitamin K1 (µg)'] || 0)) || 0,
+        thiamin_mg: parseFloat(String(vitamins['Thiamin (mg)'] || 0)) || 0,
+        riboflavin_mg: parseFloat(String(vitamins['Riboflavin (mg)'] || 0)) || 0,
+        niacin_mg: parseFloat(String(vitamins['Niacin Equivalent (mg)'] || 0)) || 0,
+        tryptophan_60_mg: parseFloat(String(vitamins['Tryptophan/60 (mg)'] || 0)) || 0,
+        vitamin_b6_mg: parseFloat(String(vitamins['Vitamin B6 (mg)'] || 0)) || 0,
+        vitamin_b12_ug: parseFloat(String(vitamins['Vitamin B12 (µg)'] || 0)) || 0,
+        folate_ug: parseFloat(String(vitamins['Folate (µg)'] || 0)) || 0,
+        pantothenate_mg: parseFloat(String(vitamins['Pantothenic acid (mg)'] || 0)) || 0,
+        biotin_ug: parseFloat(String(vitamins['Biotin (µg)'] || 0)) || 0,
+        vitamin_c_mg: parseFloat(String(vitamins['Vitamin C (mg)'] || 0)) || 0,
       };
       
       // Only include entries with valid food names

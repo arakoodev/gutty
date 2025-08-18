@@ -113,44 +113,107 @@ export default new Command("health-analyze")
       }
       console.log(`   Found ${candidates.length} recipe candidates`);
       
-      // Skip re-ranking for now since test recipes don't have actual images
-      console.log("   Skipping image re-ranking (using CLIP text similarity only)");
-      const rescored = candidates.map((c: any) => ({ ...c, rerankScore: 1.0 - c._distance }));
+      // Use vision analysis with intelligent ingredient filtering
+      console.log("   Using vision analysis to validate ingredients");
+      const context = candidates.map((c: any) => ({
+        id: c.id,
+        title: c.title,
+        ingredients: Array.isArray(c.ingredients) ? c.ingredients : 
+                    c.ingredients?.toArray ? c.ingredients.toArray() : [String(c.ingredients)],
+        servings: c.servings
+      }));
       
-      // Temporarily skip vision analysis and use best CLIP match
-      const bestMatch = rescored[0];
-      console.log("   Using best CLIP similarity match (skipping vision analysis)");
-      // console.log("   Best match:", JSON.stringify(bestMatch, null, 2));
-      
-      // Handle ingredients safely - convert Arrow vectors to JavaScript arrays
-      let ingredientList: string[] = [];
-      if (bestMatch.ingredients) {
-        if (Array.isArray(bestMatch.ingredients)) {
-          ingredientList = bestMatch.ingredients;
-        } else if (bestMatch.ingredients.toArray) {
-          // Arrow vector - convert to JS array
-          ingredientList = bestMatch.ingredients.toArray();
-        } else if (bestMatch.ingredients.length !== undefined) {
-          // Try to extract from vector-like structure
-          ingredientList = [];
-          for (let i = 0; i < bestMatch.ingredients.length; i++) {
-            const item = bestMatch.ingredients.get ? bestMatch.ingredients.get(i) : bestMatch.ingredients[i];
-            if (item) ingredientList.push(String(item));
-          }
-        } else {
-          ingredientList = [String(bestMatch.ingredients)];
-        }
-      }
+      const visionPrompt = `<task>
+You are a culinary expert analyzing a food photograph alongside candidate recipes. Your goal is to identify what dish is actually shown and extract the most realistic ingredient list based on visual evidence.
+</task>
+
+<visual_analysis_process>
+<step_1_observation>
+First, carefully examine the image and note:
+- What type of dish is this? (curry, stew, salad, etc.)
+- What cooking style/cuisine does this appear to be? (Indian, American, Mediterranean, etc.)
+- What main ingredients can you visually identify?
+- What color, texture, and presentation clues do you see?
+- What cooking method appears to have been used?
+</step_1_observation>
+
+<step_2_candidate_evaluation>
+For each candidate recipe, ask yourself:
+- Does this recipe type match what I see in the image?
+- Are the suggested ingredients visually consistent with the photo?
+- Are there ingredients in the recipe that I cannot see or reasonably infer from the image?
+- Does the cuisine style match the visual presentation?
+</step_2_candidate_evaluation>
+
+<step_3_ingredient_reasoning>
+For each ingredient in your chosen recipe, apply this reasoning:
+- Can I see this ingredient directly in the image? (include it)
+- Can I reasonably infer this ingredient from the cooking method/style? (include it)
+- Is this ingredient completely inconsistent with what I observe? (exclude it)
+- If I see vegetables but recipe suggests meat, what would be the logical vegetable substitute?
+- Are the quantities realistic for the portion size shown?
+</step_3_ingredient_reasoning>
+
+<step_4_logical_substitutions>
+If you need to make substitutions, think logically:
+- If recipe suggests beef broth but I see a vegetable dish, use vegetable broth
+- If recipe has meat but I see only vegetables, identify the actual vegetable shown
+- If spices/seasonings are mentioned, consider if they match the visual cuisine style
+</step_4_logical_substitutions>
+</visual_analysis_process>
+
+<output_format>
+Return your analysis as JSON with your reasoning embedded:
+{
+  "chosenRecipeId": "string",
+  "confidence": 0.0-1.0,
+  "servings": number,
+  "visual_observations": "What you actually see in the image",
+  "cuisine_style": "Identified cooking style/culture",
+  "ingredients": [
+    {
+      "name": "ingredient name",
+      "qty": number,
+      "unit": "unit",
+      "reasoning": "Why this ingredient is included - visual evidence or logical inference",
+      "substitution_made": "If you substituted an ingredient, explain why"
+    }
+  ]
+}
+</output_format>
+
+<critical_principle>
+Base every ingredient decision on what you can SEE or logically INFER from the visual evidence. Do not blindly copy recipe ingredients that don't match the actual food shown.
+</critical_principle>`;
+
+      let chosen;
+      try {
+        chosen = await withFallback(async p => await p.visionJSON({ 
+          image: { path: imagePath }, 
+          prompt: visionPrompt, 
+          context 
+        }));
+        console.log("   ✓ Vision analysis successful with XML reasoning prompt");
+      } catch (error) {
+        console.warn("   ⚠️  Vision analysis failed, using top recipe as fallback...");
+        console.warn("   (Note: Install proper Google Cloud credentials for intelligent filtering)");
+        // Simple fallback: Use the top recipe ingredients as-is
+        const topRecipe = candidates[0];
+        const originalIngredients = Array.isArray(topRecipe.ingredients) ? 
+          topRecipe.ingredients : 
+          (topRecipe.ingredients?.toArray ? topRecipe.ingredients.toArray() : [String(topRecipe.ingredients)]);
         
-      const chosen = {
-        chosenRecipeId: bestMatch.id,
-        servings: bestMatch.servings || 4,
-        ingredients: ingredientList.map((ing: string) => ({
-          name: String(ing),
-          qty: 1,
-          unit: "serving"
-        }))
-      };
+        chosen = {
+          chosenRecipeId: topRecipe.id,
+          confidence: 0.5,
+          servings: topRecipe.servings || 4,
+          ingredients: originalIngredients.map((ing: string) => ({
+            name: ing,
+            qty: 1,
+            unit: "serving"
+          }))
+        };
+      }
       
       console.log(`   ✓ Identified recipe: ${chosen.chosenRecipeId || "Unknown"}`);
       console.log(`   ✓ Ingredients: ${chosen.ingredients.length} items`);
@@ -342,10 +405,10 @@ export default new Command("health-analyze")
         step1_recipe_matching: {
           description: "Image analyzed using CLIP embeddings to find similar recipes from database",
           candidates_found: candidates.length,
-          top_candidates: rescored.slice(0,5).map((r:any) => ({
+          top_candidates: candidates.slice(0,5).map((r:any) => ({
             recipe_id: r.id,
             title: r.title,
-            similarity_score: r.rerankScore.toFixed(3),
+            similarity_score: (r._distance || r.rerankScore || 0).toFixed(3),
             ingredients_preview: (() => {
               const ingredients = Array.isArray(r.ingredients) ? r.ingredients : 
                 (r.ingredients.toArray ? r.ingredients.toArray() : 
@@ -357,7 +420,7 @@ export default new Command("health-analyze")
           llm_consolidation: {
             chosen_recipe: chosen.chosenRecipeId,
             confidence_indicators: [
-              `Selected from top ${rescored.slice(0,10).length} candidates`,
+              `Selected from top ${candidates.slice(0,10).length} candidates`,
               `Recipe servings: ${chosen.servings}`,
               `Extracted ${chosen.ingredients.length} ingredients`
             ]

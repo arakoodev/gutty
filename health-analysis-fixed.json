@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "analysis_date": "2025-08-18T19:51:11.393Z",
+    "analysis_date": "2025-08-18T20:07:31.171Z",
     "input_image": "https://cinnamonsnail.com/wp-content/uploads/2023/06/Lauki-ki-sabji-feature.jpg",
-    "download_path": "/tmp/gutty-image-1755546647672.jpg",
+    "download_path": "/tmp/gutty-image-1755547619670.jpg",
     "verticals_analyzed": [
       "pcos",
       "endometriosis",
@@ -17,31 +17,31 @@
       {
         "recipe_id": "140278",
         "title": "Stew In A Pumpkin(Serves 8 To 10)",
-        "similarity_score": "0.091",
+        "similarity_score": "0.909",
         "ingredients_preview": "3 Tbsp. vegetable oil, 1 large onion, roughly chopped, 2 cloves garlic, minced..."
       },
       {
         "recipe_id": "135152",
         "title": "Squash Crouquettes",
-        "similarity_score": "0.072",
+        "similarity_score": "0.928",
         "ingredients_preview": "4 or 5 yellow squash, cut up, 1 small onion, cut up, salt to taste..."
       },
       {
         "recipe_id": "196475",
         "title": "Squash, Tomato And Pepper Relish",
-        "similarity_score": "0.072",
+        "similarity_score": "0.928",
         "ingredients_preview": "squash, diced into small pieces, diced, skinned tomatoes, diced onions..."
       },
       {
         "recipe_id": "195401",
         "title": "Baked Cushaw(Crook-Necked Squash)",
-        "similarity_score": "0.071",
+        "similarity_score": "0.929",
         "ingredients_preview": "1 medium cushaw, 2 eggs, 2 c. sugar..."
       },
       {
         "recipe_id": "199347",
         "title": "Watermelon Rind Pickles",
-        "similarity_score": "0.068",
+        "similarity_score": "0.932",
         "ingredients_preview": "melon with thick rind, 1 gal. water, 2 heaping Tbsp. lime..."
       }
     ],
@@ -50,7 +50,7 @@
       "confidence_indicators": [
         "Selected from top 10 candidates",
         "Recipe servings: 4",
-        "Extracted 16 ingredients"
+        "Extracted 14 ingredients"
       ]
     }
   },
@@ -112,27 +112,6 @@
           "fiber_g": 0,
           "sugars_g": 0,
           "sodium_mg": 240
-        },
-        "health_flags": [
-          "low-gi",
-          "pcos-friendly",
-          "low-fodmap",
-          "ibs-friendly"
-        ]
-      },
-      {
-        "ingredient": "Beef, braising steak, braised, lean and fat",
-        "cofid_match": "Beef, braising steak, braised, lean and fat",
-        "glycemic_index": 54,
-        "glycemic_load": 8,
-        "nutrition_per_100g": {
-          "calories": 246,
-          "protein_g": 32.9,
-          "carbs_g": 0,
-          "fat_g": 12.7,
-          "fiber_g": 0,
-          "sugars_g": 0,
-          "sodium_mg": 60
         },
         "health_flags": [
           "low-gi",
@@ -302,27 +281,6 @@
         ]
       },
       {
-        "ingredient": "Beef, braising steak, braised, lean and fat",
-        "cofid_match": "Beef, braising steak, braised, lean and fat",
-        "glycemic_index": 54,
-        "glycemic_load": 8,
-        "nutrition_per_100g": {
-          "calories": 246,
-          "protein_g": 32.9,
-          "carbs_g": 0,
-          "fat_g": 12.7,
-          "fiber_g": 0,
-          "sugars_g": 0,
-          "sodium_mg": 60
-        },
-        "health_flags": [
-          "low-gi",
-          "pcos-friendly",
-          "low-fodmap",
-          "ibs-friendly"
-        ]
-      },
-      {
         "ingredient": "Pumpkin, flesh only, boiled in unsalted water",
         "cofid_match": "Pumpkin, flesh only, boiled in unsalted water",
         "glycemic_index": 54,
@@ -388,13 +346,13 @@
       }
     ],
     "totals_calculated": {
-      "calories": 204,
-      "protein": 8,
-      "carbs": 10.6,
-      "fat": 17.3,
-      "fiber": 3.5,
-      "sugars": 6.1,
-      "sodium": 2771,
+      "calories": 197,
+      "protein": 4.2,
+      "carbs": 12.3,
+      "fat": 18,
+      "fiber": 4,
+      "sugars": 7.1,
+      "sodium": 3188,
       "gi_value": 54,
       "is_low_gi": true,
       "is_high_fodmap": true,
@@ -409,9 +367,9 @@
       ]
     },
     "database_coverage": {
-      "ingredients_found": 15,
-      "total_ingredients": 16,
-      "coverage_percentage": 94
+      "ingredients_found": 13,
+      "total_ingredients": 14,
+      "coverage_percentage": 93
     },
     "glycemic_assessment": {
       "average_gi": 54,
@@ -439,7 +397,7 @@
           {
             "vertical": "endometriosis",
             "type": "sodium_content",
-            "message": "High sodium content (2771mg) may increase inflammation",
+            "message": "High sodium content (3188mg) may increase inflammation",
             "severity": "caution",
             "recommendation": "Consider reducing sodium intake",
             "ref": "Inflammation and sodium intake"
@@ -465,6 +423,7 @@
   "final_results": {
     "recipe_identification": {
       "chosenRecipeId": "140278",
+      "confidence": 0.7,
       "servings": 4,
       "ingredients": [
         {
@@ -479,11 +438,6 @@
         },
         {
           "name": "2 cloves garlic, minced",
-          "qty": 1,
-          "unit": "serving"
-        },
-        {
-          "name": "2 lb. boneless beef chuck, trimmed and cut into 1 1/2-inch cubes",
           "qty": 1,
           "unit": "serving"
         },
@@ -523,11 +477,6 @@
           "unit": "serving"
         },
         {
-          "name": "2 c. beef broth",
-          "qty": 1,
-          "unit": "serving"
-        },
-        {
           "name": "1 medium pumpkin (about 12 lb.), measured to fit your oven",
           "qty": 1,
           "unit": "serving"
@@ -550,13 +499,13 @@
       ]
     },
     "nutrition_totals": {
-      "calories": 204,
-      "protein": 8,
-      "carbs": 10.6,
-      "fat": 17.3,
-      "fiber": 3.5,
-      "sugars": 6.1,
-      "sodium": 2771,
+      "calories": 197,
+      "protein": 4.2,
+      "carbs": 12.3,
+      "fat": 18,
+      "fiber": 4,
+      "sugars": 7.1,
+      "sodium": 3188,
       "gi_value": 54,
       "is_low_gi": true,
       "is_high_fodmap": true,
@@ -583,7 +532,7 @@
         {
           "vertical": "endometriosis",
           "type": "sodium_content",
-          "message": "High sodium content (2771mg) may increase inflammation",
+          "message": "High sodium content (3188mg) may increase inflammation",
           "severity": "caution",
           "recommendation": "Consider reducing sodium intake",
           "ref": "Inflammation and sodium intake"
@@ -611,7 +560,7 @@
     "summary": {
       "recipe_id": "140278",
       "servings": 4,
-      "ingredients_count": 16,
+      "ingredients_count": 14,
       "health_flags": 3,
       "processing_success": true
     }
