@@ -1,6 +1,6 @@
 import { connectDB, upsertSegments } from "./lancedb";
 import { withFallback } from "../providers/selector";
-import { withRetry } from "../util/retry";
+import { withRetry, withExponentialBackoff, embeddingRateLimiter } from "../util/retry";
 import { promises as fs } from "fs";
 import path from "path";
 
@@ -152,9 +152,17 @@ export async function createOptimizedSegmentIndex(
     if (prog.doneIds[id]) continue;
     
     try {
-      // Get CLIP embedding
-      const emb = await withRetry(() => 
-        withFallback(p => p.imageEmbed({ path: img.path }))
+      // Apply rate limiting for batch operations
+      await embeddingRateLimiter.waitIfNeeded();
+      
+      console.log(`📸 Processing ${img.source}/${path.basename(img.path)} (${processed + 1}/${allImages.length})`);
+      
+      // Get CLIP embedding with exponential backoff
+      const emb = await withExponentialBackoff(() => 
+        withFallback(p => p.imageEmbed({ path: img.path })),
+        5, // maxAttempts 
+        2000, // baseDelayMs (2 seconds)
+        60000 // maxDelayMs (1 minute)
       );
       
       // Analyze image properties

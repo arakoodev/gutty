@@ -6,7 +6,7 @@ import { createOptimizedSegmentIndex } from "../index/optimized-segments";
 import { CFG } from "../config";
 import { promises as fs } from "fs";
 import path from "path";
-import { withRetry } from "../util/retry";
+import { withRetry, withExponentialBackoff, embeddingRateLimiter } from "../util/retry";
 import { downloadAllResearchDatasets, getImageDirectories, checkDatasetExists } from "../util/dataset-download";
 
 async function walk(dir:string): Promise<string[]> {
@@ -40,13 +40,35 @@ async function legacyIndexing(datasets: {dir:string, source:string}[], progressP
       if (prog.doneIds[id]) continue;
       const label = path.basename(path.dirname(f));
       try {
-        const emb = await withRetry(() => withFallback(p => p.imageEmbed({ path: f })));
-        await withRetry(() => upsertSegments([{ id, source: ds.source, label, image_path: f, emb_clip_b32: Array.from(emb) }]));
+        // Apply rate limiting for batch operations
+        await embeddingRateLimiter.waitIfNeeded();
+        
+        console.log(`📸 Processing ${path.basename(f)} (${processed + 1}/?)`);
+        
+        // Get CLIP embedding with exponential backoff  
+        const emb = await withExponentialBackoff(() => 
+          withFallback(p => p.imageEmbed({ path: f })),
+          5, // maxAttempts
+          2000, // baseDelayMs (2 seconds) 
+          60000 // maxDelayMs (1 minute)
+        );
+        
+        // Upload to database with retry
+        await withRetry(() => upsertSegments([{ 
+          id, 
+          source: ds.source, 
+          label, 
+          image_path: f, 
+          emb_clip_b32: Array.from(emb) 
+        }]));
+        
         prog.doneIds[id] = true;
         processed++;
+        console.log(`✅ Successfully indexed ${id} (${processed} total)`);
+        
         if (processed % 10 === 0) await saveProgress(progressPath, prog);
       } catch (err:any) {
-        console.warn(`Failed to index ${f}: ${err?.message || err}`);
+        console.warn(`❌ Failed to index ${f}: ${err?.message || err}`);
       }
     }
   }
@@ -63,34 +85,48 @@ export default new Command("seg-index")
   .option("--progress <path>", "Progress file", "./tmp/seg-index.progress.json")
   .option("--no-download", "Skip automatic dataset download")
   .option("--optimized", "Use optimized indexing for CLIP filtering", true)
+  .option("--no-optimized", "Use legacy indexing instead of optimized")
   .action(async (opts) => {
+    console.log("🔧 Starting seg-index action...");
     requireEmbeddingsProvider();
+    console.log("✅ Embeddings provider check passed");
     
     let datasets: {dir:string, source:string}[] = [];
+    console.log("📋 Initializing datasets array...");
     
     // Check if datasets need downloading
     if (opts.download !== false) {
-      console.log("Checking and downloading research datasets...");
+      console.log("🌐 Checking and downloading research datasets...");
       await downloadAllResearchDatasets();
+      console.log("✅ Download check complete");
+    } else {
+      console.log("⏭️ Skipping dataset download (--no-download)");
     }
     
     // Always try standard paths first, unless user overrides
+    console.log("📁 Getting image directories...");
     const imageDirs = getImageDirectories();
+    console.log("Image directories:", imageDirs);
     
     const foodinssegDir = opts.foodinsseg || imageDirs.foodinsseg;
+    console.log(`🔍 Using FoodInsSeg dir: ${foodinssegDir}`);
     const foodseg103Dir = opts.foodseg103 || imageDirs.foodseg103;
     const uecfood256Dir = opts.uecfood256 || imageDirs.uecfood256;
     const uecfood100Dir = opts.uecfood100 || imageDirs.uecfood100;
     
     // Check FoodInsSeg
     if (foodinssegDir) {
+      console.log("🔍 Checking FoodInsSeg dataset existence...");
       const exists = await checkDatasetExists('foodinsseg');
+      console.log(`Dataset exists check result: ${exists}`);
       if (exists) {
         datasets.push({ dir: foodinssegDir, source: "foodinsseg" });
         console.log(`✓ FoodInsSeg found: ${foodinssegDir}`);
       } else {
         console.warn(`✗ FoodInsSeg not found at expected path: ${foodinssegDir}`);
       }
+    } else {
+      console.log("⚠️ No FoodInsSeg directory specified");
     }
     
     // Check FoodSeg103
@@ -133,14 +169,18 @@ export default new Command("seg-index")
       throw new Error("No datasets available for indexing");
     }
 
-    console.log(`Found ${datasets.length} datasets to index`);
+    console.log(`📊 Found ${datasets.length} datasets to index`);
+    console.log("Datasets:", datasets.map(d => `${d.source}: ${d.dir}`));
     let processed: number;
     
     if (opts.optimized) {
-      console.log("Creating optimized index for CLIP filtering...");
+      console.log("🚀 Creating optimized index for CLIP filtering...");
+      console.log(`Progress file: ${opts.progress}`);
+      console.log("🔄 Calling createOptimizedSegmentIndex...");
       processed = await createOptimizedSegmentIndex(datasets, opts.progress);
+      console.log(`✅ Optimized indexing completed: ${processed} segments`);
     } else {
-      console.log("Using legacy indexing approach...");
+      console.log("🐌 Using legacy indexing approach...");
       processed = await legacyIndexing(datasets, opts.progress);
     }
     
