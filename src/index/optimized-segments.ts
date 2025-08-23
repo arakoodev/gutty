@@ -217,9 +217,6 @@ export async function createOptimizedSegmentIndex(
   
   await saveProgress(progressPath, prog);
   
-  // Step 4: Create optimized HNSW index
-  await createOptimizedHNSWIndex();
-  
   return processed;
 }
 

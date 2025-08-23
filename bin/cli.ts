@@ -27,6 +27,7 @@ import recipeIndex from "../src/cli/recipe-index";
 import nutritionIndex from "../src/cli/nutrition-index";
 import giIndex from "../src/cli/gi-index";
 import fodmapIndex from "../src/cli/fodmap-index";
+import createIndex from "../src/cli/create-index";
 
 const program = new Command();
 program.name("gutty").description("Photo → Recipe → Calories (standalone CLI)");
@@ -54,6 +55,7 @@ program.addCommand(recipeIndex);
 program.addCommand(nutritionIndex);
 program.addCommand(giIndex);
 program.addCommand(fodmapIndex);
+program.addCommand(createIndex);
 program.addCommand(validate);
 program.addCommand(reset);
 

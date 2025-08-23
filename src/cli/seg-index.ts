@@ -73,7 +73,6 @@ async function legacyIndexing(datasets: {dir:string, source:string}[], progressP
     }
   }
   await saveProgress(progressPath, prog);
-  await createIndex(CFG.storage.segmentsTable, "emb_clip_b32");
   return processed;
 }
 
