@@ -1,0 +1,345 @@
+{
+  "metadata": {
+    "analysis_date": "2025-08-23T15:13:10.758Z",
+    "input_image": "https://i.imgur.com/UTWgFbW.png",
+    "download_path": "/tmp/gutty-image-1755961969451.jpg",
+    "verticals_analyzed": [
+      "ibs",
+      "pcos",
+      "endometriosis"
+    ],
+    "processing_pipeline": "Image → Recipe Matching → Nutrition Mapping → Health Analysis"
+  },
+  "step1_recipe_matching": {
+    "description": "Image analyzed using CLIP embeddings to find similar recipes from database",
+    "candidates_found": 50,
+    "top_candidates": [
+      {
+        "recipe_id": "198652",
+        "title": "Okra Patties",
+        "similarity_score": "0.916",
+        "ingredients_preview": "3 c. chopped okra, 3 Tbsp. melted butter, 2 c. cornmeal..."
+      },
+      {
+        "recipe_id": "52257",
+        "title": "Bamboo Pickles",
+        "similarity_score": "0.922",
+        "ingredients_preview": "3 c. vinegar, 3 c. water, 1/4 c. salt"
+      },
+      {
+        "recipe_id": "82603",
+        "title": "Okra Patties",
+        "similarity_score": "0.929",
+        "ingredients_preview": "1 can okra, 1/2 c. meal (self-rising), 1 egg"
+      },
+      {
+        "recipe_id": "220845",
+        "title": "Formula",
+        "similarity_score": "0.934",
+        "ingredients_preview": "1 (13 oz.) can your favorite formula (Similac, etc.), equal measure water (13 oz.)"
+      },
+      {
+        "recipe_id": "162873",
+        "title": "Goblick(Kids Love The Feel Of This)",
+        "similarity_score": "0.935",
+        "ingredients_preview": "1/2 c. water, 1 c. cornstarch"
+      }
+    ],
+    "llm_consolidation": {
+      "chosen_recipe": "198652",
+      "confidence_indicators": [
+        "Selected from top 10 candidates",
+        "Recipe servings: 4",
+        "Extracted 4 ingredients"
+      ]
+    }
+  },
+  "step2_nutrition_mapping": {
+    "description": "Recipe ingredients mapped to COFID nutrition database and glycemic index data",
+    "ingredient_mapping": [
+      {
+        "ingredient": "Okra, boiled in unsalted water",
+        "cofid_match": "Okra, boiled in unsalted water",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 16,
+          "protein_g": 1.8,
+          "carbs_g": 1.9,
+          "fat_g": 0.2,
+          "fiber_g": 3.1,
+          "sugars_g": 1.4,
+          "sodium_mg": 5
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly",
+          "anti-inflammatory-potential",
+          "endometriosis-friendly"
+        ]
+      },
+      {
+        "ingredient": "Butter, salted",
+        "cofid_match": "Butter, salted",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 744,
+          "protein_g": 0.6,
+          "carbs_g": 0.6,
+          "fat_g": 82.2,
+          "fiber_g": 0,
+          "sugars_g": 0.6,
+          "sodium_mg": 730
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly",
+          "high-sodium"
+        ]
+      },
+      {
+        "ingredient": "Cornmeal, sifted",
+        "cofid_match": "Cornmeal, sifted",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 368,
+          "protein_g": 9.4,
+          "carbs_g": 73.1,
+          "fat_g": 3.3,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 0
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Pepper, black",
+        "cofid_match": "Pepper, black",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 10.4,
+          "carbs_g": 0,
+          "fat_g": 3.3,
+          "fiber_g": 25.3,
+          "sugars_g": 0.6,
+          "sodium_mg": 20
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "high-fiber",
+          "pcos-friendly",
+          "endometriosis-friendly",
+          "low-fodmap",
+          "ibs-friendly",
+          "anti-inflammatory-potential",
+          "endometriosis-friendly"
+        ]
+      }
+    ],
+    "totals_calculated": {
+      "calories": 282,
+      "protein": 5.6,
+      "carbs": 18.9,
+      "fat": 22.3,
+      "fiber": 7.1,
+      "sugars": 0.7,
+      "sodium": 189,
+      "gi_value": 54,
+      "is_low_gi": true,
+      "is_high_fodmap": false,
+      "health_flags": [
+        "low-gi",
+        "pcos-friendly",
+        "high-fiber",
+        "pcos-friendly",
+        "endometriosis-friendly",
+        "low-fodmap",
+        "ibs-friendly",
+        "anti-inflammatory-potential",
+        "endometriosis-friendly"
+      ]
+    },
+    "database_coverage": {
+      "ingredients_found": 4,
+      "total_ingredients": 4,
+      "coverage_percentage": 100
+    },
+    "glycemic_assessment": {
+      "average_gi": 54,
+      "gi_category": "Low (≤55)"
+    }
+  },
+  "step3_health_analysis": {
+    "description": "Ingredients analyzed against health condition databases and research",
+    "analysis_by_vertical": {
+      "ibs": {
+        "triggers_found": [
+          {
+            "vertical": "ibs",
+            "type": "fodmap_content",
+            "message": "Low-FODMAP ingredients are generally well-tolerated",
+            "severity": "positive",
+            "recommendation": "Good choice for IBS management",
+            "ref": "Low-FODMAP diet guidelines"
+          }
+        ],
+        "knowledge_base_search": null
+      },
+      "pcos": {
+        "triggers_found": [
+          {
+            "vertical": "pcos",
+            "type": "glycemic_index",
+            "message": "Low glycemic index (54) supports insulin sensitivity",
+            "severity": "positive",
+            "recommendation": "Good choice for PCOS management",
+            "ref": "PCOS dietary guidelines"
+          },
+          {
+            "vertical": "pcos",
+            "type": "fiber_content",
+            "message": "High fiber content (7.1g) supports insulin regulation",
+            "severity": "positive",
+            "recommendation": "Excellent for PCOS management",
+            "ref": "Dietary fiber and insulin sensitivity"
+          }
+        ],
+        "knowledge_base_search": null
+      },
+      "endometriosis": {
+        "triggers_found": [
+          {
+            "vertical": "endometriosis",
+            "type": "fiber_content",
+            "message": "High fiber content (7.1g) may reduce inflammation",
+            "severity": "positive",
+            "recommendation": "Beneficial for endometriosis management",
+            "ref": "Anti-inflammatory diet for endometriosis"
+          }
+        ],
+        "knowledge_base_search": null
+      }
+    }
+  },
+  "final_results": {
+    "recipe_identification": {
+      "chosenRecipeId": "198652",
+      "confidence": 0.5,
+      "servings": 4,
+      "ingredients": [
+        {
+          "name": "3 c. chopped okra",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "3 Tbsp. melted butter",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "2 c. cornmeal",
+          "qty": 1,
+          "unit": "serving"
+        },
+        {
+          "name": "salt and pepper to taste",
+          "qty": 1,
+          "unit": "serving"
+        }
+      ]
+    },
+    "nutrition_totals": {
+      "calories": 282,
+      "protein": 5.6,
+      "carbs": 18.9,
+      "fat": 22.3,
+      "fiber": 7.1,
+      "sugars": 0.7,
+      "sodium": 189,
+      "gi_value": 54,
+      "is_low_gi": true,
+      "is_high_fodmap": false,
+      "health_flags": [
+        "low-gi",
+        "pcos-friendly",
+        "high-fiber",
+        "pcos-friendly",
+        "endometriosis-friendly",
+        "low-fodmap",
+        "ibs-friendly",
+        "anti-inflammatory-potential",
+        "endometriosis-friendly"
+      ]
+    },
+    "health_considerations": {
+      "notes": [
+        {
+          "vertical": "ibs",
+          "type": "fodmap_content",
+          "message": "Low-FODMAP ingredients are generally well-tolerated",
+          "severity": "positive",
+          "recommendation": "Good choice for IBS management",
+          "ref": "Low-FODMAP diet guidelines"
+        },
+        {
+          "vertical": "pcos",
+          "type": "glycemic_index",
+          "message": "Low glycemic index (54) supports insulin sensitivity",
+          "severity": "positive",
+          "recommendation": "Good choice for PCOS management",
+          "ref": "PCOS dietary guidelines"
+        },
+        {
+          "vertical": "pcos",
+          "type": "fiber_content",
+          "message": "High fiber content (7.1g) supports insulin regulation",
+          "severity": "positive",
+          "recommendation": "Excellent for PCOS management",
+          "ref": "Dietary fiber and insulin sensitivity"
+        },
+        {
+          "vertical": "endometriosis",
+          "type": "fiber_content",
+          "message": "High fiber content (7.1g) may reduce inflammation",
+          "severity": "positive",
+          "recommendation": "Beneficial for endometriosis management",
+          "ref": "Anti-inflammatory diet for endometriosis"
+        }
+      ],
+      "evidence": [],
+      "nutrition_flags": [
+        "low-gi",
+        "pcos-friendly",
+        "high-fiber",
+        "pcos-friendly",
+        "endometriosis-friendly",
+        "low-fodmap",
+        "ibs-friendly",
+        "anti-inflammatory-potential",
+        "endometriosis-friendly"
+      ]
+    },
+    "summary": {
+      "recipe_id": "198652",
+      "servings": 4,
+      "ingredients_count": 4,
+      "health_flags": 4,
+      "processing_success": true
+    }
+  }
+}

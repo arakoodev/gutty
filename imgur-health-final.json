@@ -1,0 +1,233 @@
+{
+  "metadata": {
+    "analysis_date": "2025-09-08T12:57:13.653Z",
+    "input_image": "/tmp/imgur-test-image.png",
+    "download_path": "/tmp/imgur-test-image.png",
+    "verticals_analyzed": [
+      "pcos",
+      "endometriosis",
+      "ibs"
+    ],
+    "processing_pipeline": "Image → Gemini 2.5 Flash Ingredient ID → Nutrition Mapping → Health Analysis"
+  },
+  "step1_ingredient_identification": {
+    "description": "Image analyzed using Gemini 2.5 Flash to directly identify individual ingredients",
+    "method": "gemini-2.5-flash",
+    "ingredients_found": 4,
+    "identified_ingredients": [
+      {
+        "name": "Ragi Roti",
+        "confidence": 0.95,
+        "description": "Dark brown, flat, and roundish bread with a coarse texture, likely made from millet."
+      },
+      {
+        "name": "Okra",
+        "confidence": 0.9,
+        "description": "Elongated, green, cooked vegetable pieces visible within the curry."
+      },
+      {
+        "name": "Potato",
+        "confidence": 0.85,
+        "description": "Light yellow to off-white, irregular chunks of cooked vegetable within the curry."
+      },
+      {
+        "name": "Curry Sauce",
+        "confidence": 0.9,
+        "description": "Orange-reddish, thick liquid base of the dish, appearing to be a vegetable or lentil-based curry sauce."
+      }
+    ],
+    "processing_time_ms": 17713,
+    "confidence_indicators": [
+      "Identified 4 ingredients",
+      "Average confidence: 90.0%",
+      "Direct ingredient identification (no recipe matching required)"
+    ]
+  },
+  "step2_nutrition_mapping": {
+    "description": "Ingredients mapped to COFID nutrition database and glycemic index data",
+    "ingredient_mapping": [
+      {
+        "ingredient": "Unknown",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 16,
+          "protein_g": 1.8,
+          "carbs_g": 1.9,
+          "fat_g": 0.2,
+          "fiber_g": 3.1,
+          "sugars_g": 1.4,
+          "sodium_mg": 5
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly",
+          "anti-inflammatory-potential",
+          "endometriosis-friendly"
+        ]
+      },
+      {
+        "ingredient": "Unknown",
+        "glycemic_index": 81,
+        "glycemic_load": 16,
+        "nutrition_per_100g": {
+          "calories": 122,
+          "protein_g": 4.4,
+          "carbs_g": 12.6,
+          "fat_g": 6.5,
+          "fiber_g": 0,
+          "sugars_g": 1.6,
+          "sodium_mg": 490
+        },
+        "health_flags": [
+          "high-gi",
+          "pcos-caution",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Unknown",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 328,
+          "protein_g": 5.7,
+          "carbs_g": 3.3,
+          "fat_g": 33.4,
+          "fiber_g": 0,
+          "sugars_g": 1.1,
+          "sodium_mg": 51
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      }
+    ],
+    "totals_calculated": {
+      "calories": 155,
+      "protein": 4,
+      "carbs": 5.9,
+      "fat": 13.4,
+      "fiber": 1,
+      "sugars": 1.4,
+      "sodium": 182,
+      "gi_value": 63,
+      "is_low_gi": false,
+      "is_high_fodmap": false,
+      "health_flags": [
+        "low-fodmap",
+        "ibs-friendly"
+      ]
+    },
+    "database_coverage": {
+      "ingredients_found": 0,
+      "total_ingredients": 4,
+      "coverage_percentage": 0
+    },
+    "glycemic_assessment": {
+      "average_gi": 63,
+      "gi_category": "Medium (56-70)"
+    }
+  },
+  "step3_health_analysis": {
+    "description": "Ingredients analyzed against health condition databases and research",
+    "analysis_by_vertical": {
+      "pcos": {
+        "triggers_found": [],
+        "knowledge_base_search": null
+      },
+      "endometriosis": {
+        "triggers_found": [],
+        "knowledge_base_search": null
+      },
+      "ibs": {
+        "triggers_found": [
+          {
+            "vertical": "ibs",
+            "type": "fodmap_content",
+            "message": "Low-FODMAP ingredients are generally well-tolerated",
+            "severity": "positive",
+            "recommendation": "Good choice for IBS management",
+            "ref": "Low-FODMAP diet guidelines"
+          }
+        ],
+        "knowledge_base_search": null
+      }
+    }
+  },
+  "final_results": {
+    "ingredient_identification": {
+      "method": "gemini-2.5-flash",
+      "confidence": 0.9,
+      "total_ingredients": 4,
+      "ingredients": [
+        {
+          "name": "Ragi Roti",
+          "confidence": 0.95,
+          "description": "Dark brown, flat, and roundish bread with a coarse texture, likely made from millet."
+        },
+        {
+          "name": "Okra",
+          "confidence": 0.9,
+          "description": "Elongated, green, cooked vegetable pieces visible within the curry."
+        },
+        {
+          "name": "Potato",
+          "confidence": 0.85,
+          "description": "Light yellow to off-white, irregular chunks of cooked vegetable within the curry."
+        },
+        {
+          "name": "Curry Sauce",
+          "confidence": 0.9,
+          "description": "Orange-reddish, thick liquid base of the dish, appearing to be a vegetable or lentil-based curry sauce."
+        }
+      ]
+    },
+    "nutrition_totals": {
+      "calories": 155,
+      "protein": 4,
+      "carbs": 5.9,
+      "fat": 13.4,
+      "fiber": 1,
+      "sugars": 1.4,
+      "sodium": 182,
+      "gi_value": 63,
+      "is_low_gi": false,
+      "is_high_fodmap": false,
+      "health_flags": [
+        "low-fodmap",
+        "ibs-friendly"
+      ]
+    },
+    "health_considerations": {
+      "notes": [
+        {
+          "vertical": "ibs",
+          "type": "fodmap_content",
+          "message": "Low-FODMAP ingredients are generally well-tolerated",
+          "severity": "positive",
+          "recommendation": "Good choice for IBS management",
+          "ref": "Low-FODMAP diet guidelines"
+        }
+      ],
+      "evidence": [],
+      "nutrition_flags": [
+        "low-fodmap",
+        "ibs-friendly"
+      ]
+    },
+    "summary": {
+      "method": "gemini-2.5-flash",
+      "ingredients_count": 4,
+      "nutrition_matches": 0,
+      "health_flags": 1,
+      "processing_success": true
+    }
+  }
+}

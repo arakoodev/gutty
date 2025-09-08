@@ -1,0 +1,349 @@
+{
+  "metadata": {
+    "analysis_date": "2025-09-08T13:24:35.387Z",
+    "input_image": "/tmp/imgur-test-image.png",
+    "download_path": "/tmp/imgur-test-image.png",
+    "verticals_analyzed": [
+      "pcos",
+      "endometriosis",
+      "ibs"
+    ],
+    "processing_pipeline": "Image → Gemini 2.5 Flash Ingredient ID → Nutrition Mapping → Health Analysis"
+  },
+  "step1_ingredient_identification": {
+    "description": "Image analyzed using Gemini 2.5 Flash to directly identify individual ingredients",
+    "method": "gemini-2.5-flash",
+    "ingredients_found": 7,
+    "identified_ingredients": [
+      {
+        "name": "Ragi Roti",
+        "confidence": 0.95,
+        "description": "A dark brown, thin, unleavened flatbread, likely made from finger millet flour, visible at the bottom of the plate."
+      },
+      {
+        "name": "Curry Sauce",
+        "confidence": 0.9,
+        "description": "A reddish-orange, liquid sauce forming the base of the stew, with small dark specks of spices."
+      },
+      {
+        "name": "Potatoes",
+        "confidence": 0.9,
+        "description": "Pale yellow to off-white irregular chunks of cooked potato visible in the curry."
+      },
+      {
+        "name": "Okra (Bhindi)",
+        "confidence": 0.85,
+        "description": "An elongated, green, cooked vegetable pod visible in the curry."
+      },
+      {
+        "name": "Fried Crispy Pieces",
+        "confidence": 0.75,
+        "description": "Small, golden-brown, irregular pieces with a crispy appearance, possibly from a fried fritter or broken cracker."
+      },
+      {
+        "name": "Cooked Vegetable Chunks",
+        "confidence": 0.65,
+        "description": "Darker brown, irregular pieces of a cooked vegetable, difficult to identify specifically."
+      },
+      {
+        "name": "Whole Spices",
+        "confidence": 0.8,
+        "description": "Tiny, dark specks visible within the curry sauce, indicative of whole spices like cumin or mustard seeds."
+      }
+    ],
+    "processing_time_ms": 19992,
+    "confidence_indicators": [
+      "Identified 7 ingredients",
+      "Average confidence: 82.9%",
+      "Direct ingredient identification (no recipe matching required)"
+    ]
+  },
+  "step2_nutrition_mapping": {
+    "description": "Ingredients mapped to COFID nutrition database and glycemic index data",
+    "ingredient_mapping": [
+      {
+        "ingredient": "Unknown",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 328,
+          "protein_g": 5.7,
+          "carbs_g": 3.3,
+          "fat_g": 33.4,
+          "fiber_g": 0,
+          "sugars_g": 1.1,
+          "sodium_mg": 51
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Unknown",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 124,
+          "protein_g": 3.1,
+          "carbs_g": 17.5,
+          "fat_g": 5.1,
+          "fiber_g": 1.6,
+          "sugars_g": 0.8,
+          "sodium_mg": 53
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Unknown",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 16,
+          "protein_g": 1.8,
+          "carbs_g": 1.9,
+          "fat_g": 0.2,
+          "fiber_g": 3.1,
+          "sugars_g": 1.4,
+          "sodium_mg": 5
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly",
+          "anti-inflammatory-potential",
+          "endometriosis-friendly"
+        ]
+      },
+      {
+        "ingredient": "Unknown",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 198,
+          "protein_g": 1.8,
+          "carbs_g": 29,
+          "fat_g": 9.2,
+          "fiber_g": 2.1,
+          "sugars_g": 18,
+          "sodium_mg": 66
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "high-sugar",
+          "pcos-caution",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Unknown",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 121,
+          "protein_g": 4.3,
+          "carbs_g": 13.7,
+          "fat_g": 5.9,
+          "fiber_g": 1.2,
+          "sugars_g": 4.6,
+          "sodium_mg": 107
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly"
+        ]
+      },
+      {
+        "ingredient": "Unknown",
+        "glycemic_index": 54,
+        "glycemic_load": 8,
+        "nutrition_per_100g": {
+          "calories": 0,
+          "protein_g": 13.2,
+          "carbs_g": 0,
+          "fat_g": 13.3,
+          "fiber_g": 0,
+          "sugars_g": 0,
+          "sodium_mg": 1154
+        },
+        "health_flags": [
+          "low-gi",
+          "pcos-friendly",
+          "low-fodmap",
+          "ibs-friendly",
+          "high-sodium"
+        ]
+      }
+    ],
+    "totals_calculated": {
+      "calories": 131,
+      "protein": 5,
+      "carbs": 10.9,
+      "fat": 11.2,
+      "fiber": 1.3,
+      "sugars": 4.3,
+      "sodium": 239,
+      "gi_value": 54,
+      "is_low_gi": true,
+      "is_high_fodmap": false,
+      "health_flags": [
+        "low-gi",
+        "pcos-friendly",
+        "low-fodmap",
+        "ibs-friendly"
+      ]
+    },
+    "database_coverage": {
+      "ingredients_found": 0,
+      "total_ingredients": 7,
+      "coverage_percentage": 0
+    },
+    "glycemic_assessment": {
+      "average_gi": 54,
+      "gi_category": "Low (≤55)"
+    }
+  },
+  "step3_health_analysis": {
+    "description": "Ingredients analyzed against health condition databases and research",
+    "analysis_by_vertical": {
+      "pcos": {
+        "triggers_found": [
+          {
+            "vertical": "pcos",
+            "type": "glycemic_index",
+            "message": "Low glycemic index (54) supports insulin sensitivity",
+            "severity": "positive",
+            "recommendation": "Good choice for PCOS management",
+            "ref": "PCOS dietary guidelines"
+          }
+        ],
+        "knowledge_base_search": null
+      },
+      "endometriosis": {
+        "triggers_found": [],
+        "knowledge_base_search": null
+      },
+      "ibs": {
+        "triggers_found": [
+          {
+            "vertical": "ibs",
+            "type": "fodmap_content",
+            "message": "Low-FODMAP ingredients are generally well-tolerated",
+            "severity": "positive",
+            "recommendation": "Good choice for IBS management",
+            "ref": "Low-FODMAP diet guidelines"
+          }
+        ],
+        "knowledge_base_search": null
+      }
+    }
+  },
+  "final_results": {
+    "ingredient_identification": {
+      "method": "gemini-2.5-flash",
+      "confidence": 0.8285714285714285,
+      "total_ingredients": 7,
+      "ingredients": [
+        {
+          "name": "Ragi Roti",
+          "confidence": 0.95,
+          "description": "A dark brown, thin, unleavened flatbread, likely made from finger millet flour, visible at the bottom of the plate."
+        },
+        {
+          "name": "Curry Sauce",
+          "confidence": 0.9,
+          "description": "A reddish-orange, liquid sauce forming the base of the stew, with small dark specks of spices."
+        },
+        {
+          "name": "Potatoes",
+          "confidence": 0.9,
+          "description": "Pale yellow to off-white irregular chunks of cooked potato visible in the curry."
+        },
+        {
+          "name": "Okra (Bhindi)",
+          "confidence": 0.85,
+          "description": "An elongated, green, cooked vegetable pod visible in the curry."
+        },
+        {
+          "name": "Fried Crispy Pieces",
+          "confidence": 0.75,
+          "description": "Small, golden-brown, irregular pieces with a crispy appearance, possibly from a fried fritter or broken cracker."
+        },
+        {
+          "name": "Cooked Vegetable Chunks",
+          "confidence": 0.65,
+          "description": "Darker brown, irregular pieces of a cooked vegetable, difficult to identify specifically."
+        },
+        {
+          "name": "Whole Spices",
+          "confidence": 0.8,
+          "description": "Tiny, dark specks visible within the curry sauce, indicative of whole spices like cumin or mustard seeds."
+        }
+      ]
+    },
+    "nutrition_totals": {
+      "calories": 131,
+      "protein": 5,
+      "carbs": 10.9,
+      "fat": 11.2,
+      "fiber": 1.3,
+      "sugars": 4.3,
+      "sodium": 239,
+      "gi_value": 54,
+      "is_low_gi": true,
+      "is_high_fodmap": false,
+      "health_flags": [
+        "low-gi",
+        "pcos-friendly",
+        "low-fodmap",
+        "ibs-friendly"
+      ]
+    },
+    "health_considerations": {
+      "notes": [
+        {
+          "vertical": "pcos",
+          "type": "glycemic_index",
+          "message": "Low glycemic index (54) supports insulin sensitivity",
+          "severity": "positive",
+          "recommendation": "Good choice for PCOS management",
+          "ref": "PCOS dietary guidelines"
+        },
+        {
+          "vertical": "ibs",
+          "type": "fodmap_content",
+          "message": "Low-FODMAP ingredients are generally well-tolerated",
+          "severity": "positive",
+          "recommendation": "Good choice for IBS management",
+          "ref": "Low-FODMAP diet guidelines"
+        }
+      ],
+      "evidence": [],
+      "nutrition_flags": [
+        "low-gi",
+        "pcos-friendly",
+        "low-fodmap",
+        "ibs-friendly"
+      ]
+    },
+    "summary": {
+      "method": "gemini-2.5-flash",
+      "ingredients_count": 7,
+      "nutrition_matches": 0,
+      "health_flags": 2,
+      "processing_success": true
+    }
+  }
+}

@@ -28,6 +28,8 @@ import nutritionIndex from "../src/cli/nutrition-index";
 import giIndex from "../src/cli/gi-index";
 import fodmapIndex from "../src/cli/fodmap-index";
 import createIndex from "../src/cli/create-index";
+import geminiAnalyze from "../src/cli/gemini-analyze";
+import geminiHealthAnalyze from "../src/cli/gemini-health-analyze";
 
 const program = new Command();
 program.name("gutty").description("Photo → Recipe → Calories (standalone CLI)");
@@ -56,6 +58,8 @@ program.addCommand(nutritionIndex);
 program.addCommand(giIndex);
 program.addCommand(fodmapIndex);
 program.addCommand(createIndex);
+program.addCommand(geminiAnalyze);
+program.addCommand(geminiHealthAnalyze);
 program.addCommand(validate);
 program.addCommand(reset);
 
