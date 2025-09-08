@@ -5,13 +5,12 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "gutty": "bin/cli.js"
+    "gutty": "bin/cli.ts"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/config.ts"
   },
   "scripts": {
-    "build": "tsup 'src/**/*.{ts,js}' --ignore '**/*.test.*' --dts --format cjs,esm --clean && tsup bin/cli.ts --format cjs --dts false",
     "dev": "tsx watch bin/cli.ts",
     "test": "vitest",
     "gutty": "node bin/cli.js"
