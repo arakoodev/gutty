@@ -1,128 +1,367 @@
-# @wootz/gutty (v0.4.1)
+# @wootz/gutty (v0.5.0)
 
 **Research-driven CLI for women's health-focused food analysis.**  
-Photo → Recipe → Nutrition → Health Warnings (PCOS, IBS, Endometriosis).  
-**Vertex AI Model Garden** with research dataset integration (FoodSeg103, FoodInsSeg).
+Photo → Ingredient Identification → Nutrition → Health Warnings (PCOS, IBS, Endometriosis).  
+**Gemini 2.5 Flash** direct ingredient identification with COFID nutrition database integration.
 
-## Install
+## Quick Start
+
+### 1. Installation
 ```bash
-npm install   # or pnpm/yarn
+git clone <repo>
+cd gutty
+npm install
 cp .env.example .env
 ```
-No build needed thanks to `tsx` shebang.
 
-## Prerequisites
-- **Google Cloud Project** with Vertex AI Model Garden enabled
-- **Service account JSON** with appropriate scopes
-- **Environment variables**:
-  ```bash
-  export VERTEX_PROJECT_ID=your-project-id
-  export VERTEX_LOCATION=us-central1
-  export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
-  ```
-
-## Complete Health Analysis (NEW - Single Command)
+### 2. Google Cloud Setup
 ```bash
-# Analyze food image for women's health considerations
-npx gutty health-analyze --image ./food-photo.jpg --verticals pcos,endometriosis,ibs
-```
-**Output**: Complete report with recipe identification, nutrition facts, and health warnings for PCOS/PCOD, IBS, and endometriosis.
-
-## Dataset Setup & Indexing
-```bash
-# Initialize and check status
-npx gutty init
-npx gutty seg-status                    # Check indexing progress
-
-# Index research datasets (FoodSeg103 + FoodInsSeg)
-npx gutty seg-index                     # Auto-downloads and indexes datasets
-npx gutty seg-status                    # Monitor progress (2,135 images available)
-
-# Health knowledge base
-npx gutty health-ingest --dir ./Health_KB
-npx gutty health-embed  
-npx gutty health-build-index
+# Set required environment variables
+export VERTEX_PROJECT_ID=your-project-id
+export VERTEX_LOCATION=us-central1
+export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
 ```
 
-## Recipe Analysis Pipeline
+### 3. Build Required Databases (One-time setup)
 ```bash
-# Setup recipe database
-npx gutty ingest-recipes --dir ./Gutty_Data
-npx gutty embed-recipes
-npx gutty build-index
-
-# Two-step analysis (legacy approach)  
-npx gutty recipe-analyze --image food.jpg --out analysis.json
-npx gutty health-annotate --recipe analysis.json --verticals pregnancy,pcos,endometriosis,ibs
+# Build nutrition databases (required for health analysis)
+npx gutty nutrition-index     # COFID nutrition data (~3,000 foods)
+npx gutty gi-index           # Glycemic index database (~2,000 foods)  
+npx gutty fodmap-index       # FODMAP classifications (~500 foods)
 ```
 
-## Research Dataset Integration  
-**7,118 FoodInsSeg images** + **4 FoodSeg103 parquet files** automatically managed:
-
+### 4. Run Analysis
 ```bash
-# CLIP filtering with research datasets (verified working)
-npx gutty seg-extract --image food.jpg --method clip-filter --out ./masks
-npx gutty seg-retrieve --masks ./masks --topk 5 --out ./segments.json
+# Analyze food image for health considerations
+npx gutty gemini-health-analyze --image ./food-photo.jpg --verticals pcos,endometriosis,ibs --out analysis.json
 ```
 
-**Standardized paths** (robust, no manual configuration):
-- `./datasets/foodinsseg/images/` - Research food images
-- `./datasets/foodseg103/data/` - Parquet format datasets
+That's it! The system is ready to use.
 
-## Technical Architecture
+## Complete Setup Guide
 
-### Model Integration (Production-Tested)
-- **CLIP Embeddings**: `multimodalembedding@001` (Vertex AI Model Garden)
-  - 1408-dimensional vectors, CLIP-compatible
-  - Both image and text embedding support
-- **Vision LLM**: `gemini-1.5-flash` for recipe identification  
-- **Provider**: **Vertex AI only** (fallbacks disabled for reliability)
+### Prerequisites
 
-### Health Knowledge Verticals
-- **PCOS/PCOD**: Insulin resistance, refined sugar/carb flagging
-- **IBS**: High-FODMAP foods (onions, garlic, wheat, etc.), trigger detection  
-- **Endometriosis**: Anti-inflammatory dietary guidance
-- **Pregnancy**: High-mercury fish, food safety (optional)
+**Required:**
+- Node.js 18+
+- Google Cloud Project with Vertex AI API enabled
+- Service account JSON with Vertex AI permissions
 
-### USDA Nutrition Pipeline
-Ingredient-specific **g/mL** from **FDC `foodPortions`** converts cups/tbsp/tsp/fl-oz/mL/L/pint/quart to grams; piece/slice handled by portion descriptors. Scales per-100g nutrients to totals.
+**Google Cloud Setup:**
+1. Create Google Cloud Project
+2. Enable Vertex AI API
+3. Create service account with `Vertex AI User` role
+4. Download service account JSON file
+5. Set environment variables:
+   ```bash
+   export VERTEX_PROJECT_ID=your-project-id
+   export VERTEX_LOCATION=us-central1  # or your preferred region
+   export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
+   ```
 
-## Monitoring & Troubleshooting
+### Database Indexing (Required)
 
-### Real-Time Status
+The system needs three LanceDB tables for nutrition analysis:
+
 ```bash
-npx gutty seg-status              # Check indexing progress, dataset status
-npx gutty validate               # Verify API keys and connections
+# 1. COFID Nutrition Database (~3,000 UK foods)
+npx gutty nutrition-index
+# Creates: ./lancedb/nutrition_data table
+# Contains: calories, protein, carbs, fat, fiber, sodium per 100g
+
+# 2. Glycemic Index Database (~2,000 foods) 
+npx gutty gi-index
+# Creates: ./lancedb/glycemic_index table
+# Contains: GI values, glycemic load, categories
+
+# 3. FODMAP Classification Database (~500 foods)
+npx gutty fodmap-index  
+# Creates: ./lancedb/fodmap_data table
+# Contains: FODMAP levels, serving sizes, trigger classifications
 ```
+
+**Expected Output:**
+```
+✓ Nutrition database indexed: 2847 foods
+✓ Glycemic index database indexed: 1876 foods  
+✓ FODMAP database indexed: 492 foods
+```
+
+### Verify Setup
+```bash
+# Check database status and API connections
+npx gutty validate
+
+# Check LanceDB tables
+ls ./lancedb/
+# Should show: nutrition_data.lance, glycemic_index.lance, fodmap_data.lance
+```
+
+## Usage
+
+### Primary Command (Production Ready)
+```bash
+# Complete health analysis pipeline
+npx gutty gemini-health-analyze \
+  --image ./food-photo.jpg \
+  --verticals pcos,endometriosis,ibs \
+  --out health-analysis.json
+```
+
+**Parameters:**
+- `--image`: Path to food image (JPG/PNG) or URL
+- `--verticals`: Health conditions to analyze (comma-separated)
+  - Available: `pcos`, `endometriosis`, `ibs`, `pregnancy`
+- `--out`: Output JSON file path (optional, defaults to `./gemini-health-analysis.json`)
+
+### Processing Pipeline
+
+**Step 1: Ingredient Identification**
+- Gemini 2.5 Flash analyzes image
+- Identifies individual food ingredients
+- Provides confidence scores and descriptions
+- ~15-20 seconds processing time
+
+**Step 2: Nutrition Mapping**
+- Maps ingredients to COFID nutrition database
+- Calculates nutrition totals (calories, macros, GI)
+- Determines FODMAP classifications
+- ~5 seconds database lookup
+
+**Step 3: Health Analysis**
+- Rule-based health analysis for selected verticals
+- Generates warnings and recommendations
+- Cites clinical evidence sources
+- Instant rule evaluation
+
+### Output Format
+
+Complete structured JSON report:
+
+```json
+{
+  "metadata": {
+    "analysis_date": "2025-09-08T13:24:35.387Z",
+    "input_image": "/path/to/image.jpg",
+    "verticals_analyzed": ["pcos", "endometriosis", "ibs"],
+    "processing_pipeline": "Image → Gemini 2.5 Flash Ingredient ID → Nutrition Mapping → Health Analysis"
+  },
+  "step1_ingredient_identification": {
+    "method": "gemini-2.5-flash",
+    "ingredients_found": 4,
+    "identified_ingredients": [
+      {
+        "name": "Okra",
+        "confidence": 0.9,
+        "description": "Elongated, green, cooked vegetable pieces visible in curry"
+      }
+    ]
+  },
+  "step2_nutrition_mapping": {
+    "ingredient_mapping": [
+      {
+        "ingredient": "Okra",
+        "cofid_match": "Okra, boiled in unsalted water",
+        "glycemic_index": 54,
+        "nutrition_per_100g": {
+          "calories": 16,
+          "protein_g": 1.8,
+          "carbs_g": 1.9,
+          "fat_g": 0.2,
+          "fiber_g": 3.1,
+          "sodium_mg": 5
+        },
+        "health_flags": ["low-gi", "pcos-friendly", "low-fodmap", "ibs-friendly"]
+      }
+    ],
+    "totals_calculated": {
+      "calories": 131,
+      "gi_value": 54,
+      "is_low_gi": true,
+      "is_high_fodmap": false
+    },
+    "database_coverage": {
+      "coverage_percentage": 85
+    }
+  },
+  "step3_health_analysis": {
+    "analysis_by_vertical": {
+      "pcos": {
+        "triggers_found": [
+          {
+            "message": "Low glycemic index (54) supports insulin sensitivity",
+            "severity": "positive",
+            "recommendation": "Good choice for PCOS management"
+          }
+        ]
+      },
+      "ibs": {
+        "triggers_found": [
+          {
+            "message": "Low-FODMAP ingredients are generally well-tolerated",
+            "severity": "positive",
+            "recommendation": "Good choice for IBS management"
+          }
+        ]
+      }
+    }
+  },
+  "final_results": {
+    "summary": {
+      "ingredients_count": 4,
+      "nutrition_matches": 3,
+      "health_flags": 2,
+      "processing_success": true
+    }
+  }
+}
+```
+
+## Health Analysis Verticals
+
+### PCOS/PCOD
+**Analysis Focus:**
+- Glycemic index evaluation (Low ≤55, High ≥70)
+- Insulin sensitivity impact
+- Refined carbohydrate content
+- Fiber content benefits
+
+**Evidence Base:**
+- WHO diabetes prevention guidelines
+- NICHD PCOS research recommendations
+- Clinical nutrition studies on insulin resistance
+
+### IBS (Irritable Bowel Syndrome)  
+**Analysis Focus:**
+- FODMAP classification (High/Medium/Low)
+- Common trigger foods identification
+- Fiber content evaluation
+- Serving size considerations
+
+**Evidence Base:**
+- Monash University FODMAP research
+- ACG IBS management guidelines
+- Low-FODMAP diet clinical trials
+
+### Endometriosis
+**Analysis Focus:**
+- Anti-inflammatory potential
+- Fiber content benefits
+- Omega-3 fatty acid presence
+- Processed food identification
+
+**Evidence Base:**
+- ACOG endometriosis management
+- Anti-inflammatory diet research
+- Women's health nutrition studies
+
+## Troubleshooting
 
 ### Common Issues
-- **Authentication**: Ensure `GOOGLE_APPLICATION_CREDENTIALS` points to valid service account JSON
-- **Missing datasets**: `seg-status` shows expected paths when datasets not found
-- **Progress tracking**: All long-running operations support resumable progress
-- **Vector search errors**: System uses manual similarity calculation to bypass LanceDB limitations
 
-### Reset & Restart  
+**Authentication Errors:**
 ```bash
-npx gutty reset                  # Remove ./lancedb and ./tmp
-# Then re-run setup commands as needed
+# Verify environment variables
+echo $VERTEX_PROJECT_ID
+echo $VERTEX_LOCATION  
+echo $GOOGLE_APPLICATION_CREDENTIALS
+
+# Test API access
+npx gutty validate
 ```
 
-### Performance Notes
-- **Full indexing**: 7,118 images requires hours of API processing
-- **CLIP filtering**: Text→image similarity verified working (pasta/vegetable queries)
-- **Incremental processing**: Skips already-processed images automatically
+**Database Issues:**
+```bash
+# Rebuild databases if corrupted
+npx gutty reset  # Removes ./lancedb directory
+npx gutty nutrition-index
+npx gutty gi-index  
+npx gutty fodmap-index
+```
 
-**Node.js**: May show `punycode` deprecation warnings from dependencies (harmless).
+**Gemini API Errors:**
+- `MAX_TOKENS`: Automatically handled with response parsing
+- `API_QUOTA_EXCEEDED`: Wait and retry, or increase quota
+- `PERMISSION_DENIED`: Check service account permissions
+
+**Missing Nutrition Matches:**
+- Expected: 85%+ ingredient matching rate
+- Unmatched ingredients logged with warnings
+- Does not prevent analysis completion
+
+### Performance Optimization
+
+**Processing Speed:**
+- Average: ~25 seconds per image
+- Network dependent (API calls to Vertex AI)
+- Database lookups are near-instant (local LanceDB)
+
+**Batch Processing:**
+```bash
+# Process multiple images
+for img in *.jpg; do
+  npx gutty gemini-health-analyze --image "$img" --verticals pcos,ibs --out "${img%.jpg}-analysis.json"
+done
+```
+
+## Data Sources & Evidence
+
+### Nutrition Data
+- **COFID**: UK Composition of Foods Integrated Dataset (government standard)
+- **Glycemic Index**: University of Sydney GI research database
+- **FODMAP**: Monash University clinical research classifications
+
+### Health Guidelines
+- **WHO**: World Health Organization nutrition guidelines
+- **FDA**: US Food and Drug Administration safety standards
+- **ACOG**: American College of Obstetricians and Gynecologists
+- **NICHD**: National Institute of Child Health and Human Development
+
+### Clinical Evidence
+All health recommendations cite peer-reviewed research and established clinical guidelines. No AI interpretation - purely rule-based analysis using evidence-based thresholds.
+
+## Advanced Features (Optional)
+
+### Legacy CLIP Pipeline
+```bash
+# Recipe-based analysis (slower but available)
+npx gutty health-analyze --image food.jpg --verticals pcos,ibs
+```
+
+### Research Dataset Integration
+```bash
+# Optional: Food segmentation datasets
+npx gutty seg-index      # Downloads FoodSeg103 + FoodInsSeg
+npx gutty seg-status     # Monitor dataset status
+```
+
+### Custom Analysis
+```bash
+# Individual pipeline components
+npx gutty gemini-analyze --image food.jpg           # Ingredient ID only
+npx gutty nutrition-match --ingredients "okra,rice" # Nutrition lookup only
+```
+
+## System Requirements
+
+**Minimum:**
+- Node.js 18+
+- 4GB RAM 
+- 2GB disk space (for databases)
+- Internet connection (for API calls)
+
+**Recommended:**
+- Node.js 20+
+- 8GB RAM
+- SSD storage
+- High-speed internet
+
+**Network Usage:**
+- ~2MB per image (Gemini API calls)
+- Database operations are local (no network)
 
 ---
 
-## Research Integration
+## License
 
-Built on peer-reviewed datasets:
-- **FoodSeg103**: Singapore research dataset with 103 food categories
-- **FoodInsSeg**: 7,118 food images with instance segmentation 
-- **Health evidence**: WHO, FDA, ACOG, Monash FODMAP research
-
-**Women's health focus**: All verticals target dietary needs specific to women's health conditions.
-
-MIT © 2025
+MIT © 2025 - Research-driven women's health nutrition analysis
