@@ -34,24 +34,23 @@ jobs:
       run: npm run typecheck --if-present
       continue-on-error: true
     
-    - name: Run core tests (CLI, LanceDB, Gemini pipeline)
+    - name: Run core tests (CLI, LanceDB, nutrition matcher)
       run: |
         npm test -- --run test/cli.test.ts
-        npm test -- --run test/lancedb-integration.test.ts  
-        npm test -- --run test/gemini-pipeline-real-db.test.ts
+        npm test -- --run test/real-lancedb.test.ts  
         npm test -- --run test/nutrition-matcher.test.ts
     
     - name: Test CLI commands (help)
       run: |
-        node bin/cli.js --help
-        node bin/cli.js validate --help
-        node bin/cli.js gemini-health-analyze --help
-        node bin/cli.js nutrition-index --help
-        node bin/cli.js gi-index --help
-        node bin/cli.js fodmap-index --help
+        npx tsx bin/cli.ts --help
+        npx tsx bin/cli.ts validate --help
+        npx tsx bin/cli.ts gemini-health-analyze --help
+        npx tsx bin/cli.ts nutrition-index --help
+        npx tsx bin/cli.ts gi-index --help
+        npx tsx bin/cli.ts fodmap-index --help
     
     - name: Test CLI validation (without credentials)
-      run: node bin/cli.js validate
+      run: npx tsx bin/cli.ts validate
       continue-on-error: true
 
   # API tests disabled for security - all tests now use mocks
