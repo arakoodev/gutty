@@ -11,7 +11,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsup src --dts --format cjs,esm --clean && tsup bin/cli.ts --format cjs --dts false",
+    "build": "tsup 'src/**/*.{ts,js}' --ignore '**/*.test.*' --dts --format cjs,esm --clean && tsup bin/cli.ts --format cjs --dts false",
     "dev": "tsx watch bin/cli.ts",
     "test": "vitest",
     "gutty": "node bin/cli.js"
