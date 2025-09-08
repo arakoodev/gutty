@@ -1,0 +1,97 @@
+{
+  "metadata": {
+    "analysis_date": "2025-09-08T14:09:24.180Z",
+    "input_image": "/non/existent/image.jpg",
+    "download_path": "/non/existent/image.jpg",
+    "verticals_analyzed": [
+      "pcos"
+    ],
+    "processing_pipeline": "Image → Gemini 2.5 Flash Ingredient ID → Nutrition Mapping → Health Analysis"
+  },
+  "step1_ingredient_identification": {
+    "description": "Image analyzed using Gemini 2.5 Flash to directly identify individual ingredients",
+    "method": "gemini-2.5-flash",
+    "ingredients_found": 0,
+    "identified_ingredients": [],
+    "processing_time_ms": 3,
+    "confidence_indicators": [
+      "Identified 0 ingredients",
+      "Average confidence: NaN%",
+      "Direct ingredient identification (no recipe matching required)"
+    ]
+  },
+  "step2_nutrition_mapping": {
+    "description": "Ingredients mapped to COFID nutrition database and glycemic index data",
+    "ingredient_mapping": [],
+    "totals_calculated": {
+      "calories": 0,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0,
+      "sugars": 0,
+      "sodium": 0,
+      "gi_value": null,
+      "is_low_gi": false,
+      "is_high_fodmap": false,
+      "health_flags": [
+        "insufficient-data"
+      ]
+    },
+    "database_coverage": {
+      "ingredients_found": 0,
+      "total_ingredients": 0,
+      "coverage_percentage": null
+    },
+    "glycemic_assessment": {
+      "average_gi": null,
+      "gi_category": "Unknown"
+    }
+  },
+  "step3_health_analysis": {
+    "description": "Ingredients analyzed against health condition databases and research",
+    "analysis_by_vertical": {
+      "pcos": {
+        "triggers_found": [],
+        "knowledge_base_search": null
+      }
+    }
+  },
+  "final_results": {
+    "ingredient_identification": {
+      "method": "gemini-2.5-flash",
+      "confidence": null,
+      "total_ingredients": 0,
+      "ingredients": []
+    },
+    "nutrition_totals": {
+      "calories": 0,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0,
+      "sugars": 0,
+      "sodium": 0,
+      "gi_value": null,
+      "is_low_gi": false,
+      "is_high_fodmap": false,
+      "health_flags": [
+        "insufficient-data"
+      ]
+    },
+    "health_considerations": {
+      "notes": [],
+      "evidence": [],
+      "nutrition_flags": [
+        "insufficient-data"
+      ]
+    },
+    "summary": {
+      "method": "gemini-2.5-flash",
+      "ingredients_count": 0,
+      "nutrition_matches": 0,
+      "health_flags": 0,
+      "processing_success": true
+    }
+  }
+}

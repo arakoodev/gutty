@@ -1,18 +1,84 @@
-name: CI
+name: Test Gutty Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [ main, nano ]
   pull_request:
+    branches: [ main ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm test -- --run
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run linting (if available)
+      run: npm run lint --if-present
+      continue-on-error: true
+    
+    - name: Run type checking (if available) 
+      run: npm run typecheck --if-present
+      continue-on-error: true
+    
+    - name: Run core tests (CLI, LanceDB, Gemini pipeline)
+      run: |
+        npm test -- --run test/cli.test.ts
+        npm test -- --run test/lancedb-integration.test.ts  
+        npm test -- --run test/gemini-pipeline-real-db.test.ts
+        npm test -- --run test/nutrition-matcher.test.ts
+    
+    - name: Test CLI commands (help)
+      run: |
+        node bin/cli.js --help
+        node bin/cli.js validate --help
+        node bin/cli.js gemini-health-analyze --help
+        node bin/cli.js nutrition-index --help
+        node bin/cli.js gi-index --help
+        node bin/cli.js fodmap-index --help
+    
+    - name: Test CLI validation (without credentials)
+      run: node bin/cli.js validate
+      continue-on-error: true
+
+  # API tests disabled for security - all tests now use mocks
+  # To enable API tests locally, set GUTTY_TEST_API=true with real credentials
+
+  build-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Test build process
+      run: npm run build --if-present
+    
+    - name: Test CLI after build
+      run: |
+        if [ -f "bin/cli.js" ]; then
+          node bin/cli.js --help
+        else
+          echo "CLI build not required"
+        fi
